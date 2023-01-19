@@ -1,14 +1,4 @@
-## [New Motoko Library]
+## Deflate.mo
 
-### Dependencies
-- Uses [@krpeacock](https://github.com/krpeacock)'s [motoko-unit-tests](https://github.com/krpeacock/motoko-unit-tests) library in the [tests/utils](./tests/utils/ActorSpec.mo) directory
-
-### Makefile Commands
-- `make test` 
-  - runs your motoko tests by interpreting the code with the motoko compiler
-  - Tests files have to be in the `/tests` directory and end with `.Test.mo`
-- `make doc` 
-  - creates html and markdown documentation from your inline comments (comments starting with 3 backslashes `///`)
-
-### Github Actions
-- Actions for running tests every time there is a push or pull request to the `main` branch
+## Resources
+http://pnrsolution.org/Datacenter/Vol4/Issue1/58.pdf

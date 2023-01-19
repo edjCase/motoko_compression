@@ -1,10 +1,12 @@
+import Buffer "mo:base/Buffer";
 import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
+import Text "mo:base/Text";
 
 import ActorSpec "./utils/ActorSpec";
 
-import Lib "../src/";
+import LZSS "../src/LZSS";
 
 let {
     assertTrue;
@@ -19,11 +21,16 @@ let {
 
 let success = run([
     describe(
-        " (Function Name) ",
+        "LZSS",
         [
             it(
-                "(test name)",
+                "encoding",
                 do {
+                    let bytes = Text.encodeUtf8("abracadabra");
+                    let encoded = LZSS.encode(bytes);
+                    Debug.print(debug_show Buffer.toArray(encoded));
+                    let decoded = LZSS.decode(encoded);
+                    Debug.print(debug_show Text.decodeUtf8(decoded));
                     assertTrue(true);
                 },
             ),
