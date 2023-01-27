@@ -8,5 +8,4 @@ module {
 
     public let encode = Encoder.encode;
     public let decode = Decoder.decode;
-
 }
