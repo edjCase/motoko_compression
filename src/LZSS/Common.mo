@@ -4,7 +4,7 @@ module {
     /// An entry in the compression table
     public type LZSSEntry = {
         /// represents a single byte that wasn't matched
-        #byte : Nat8;
+        #literal : Nat8;
 
         /// represents a reference to a previous sequence of bytes that was matched
         #ref : (Nat, Nat);
