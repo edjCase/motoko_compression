@@ -1,4 +1,4 @@
 [dependencies]
-base = "0.7.6"
+base = "0.8.1"
 itertools = "0.1.1"
 CircularBuffer = "https://github.com/NatLabs/CircularBuffer#main"
