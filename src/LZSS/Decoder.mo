@@ -15,11 +15,11 @@ module{
 
         for (entry in compressed_data.vals()) {
             switch(entry){
-                case(#byte(byte)){
+                case(#literal(byte)){
                     bytes.add(byte);
                 };
                 case(#ref((backward_offset, len))){
-                    let index = bytes.size() - backward_offset;
+                    let index = (bytes.size() - backward_offset) : Nat;
 
                     for (i in It.range(index, index + len)){
                         bytes.add(bytes.get(i));

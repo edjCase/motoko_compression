@@ -11,7 +11,11 @@ else
     TESTS_FILES=`find tests -type f -name '*.Test.mo' | grep $1`
 fi
 
-mkdir -p tests/.wasm
+compile_test () {
+    # $1 - test file
+    # $2 - wasm output file
+  $(vessel bin)/moc $LIBS -wasi-system-api $1 -o $2 --force-gc --compacting-gc
+}
 
 for TEST in $TESTS_FILES
 	do
@@ -25,12 +29,15 @@ for TEST in $TESTS_FILES
         SRC_FILE=$SRC.mo
 
         IS_COMPILED=0
+
+        mkdir -p $(dirname $WASM)
         
+        # Edit to compile any 
         if [ $TEST -nt $WASM ];
         then 
             echo "Compiling $TEST"
             rm -f $WASM
-            $(vessel bin)/moc $LIBS -wasi-system-api $TEST -o $WASM
+            compile_test $TEST $WASM
             IS_COMPILED=1
         fi
 
@@ -38,10 +45,10 @@ for TEST in $TESTS_FILES
         then 
             echo "Compiling because $SRC_FILE changed" 
             rm -f $WASM
-            $(vessel bin)/moc $LIBS -wasi-system-api $TEST -o $WASM
+            compile_test $TEST $WASM
             IS_COMPILED=1
         fi
-
+        
         if [ $IS_COMPILED -eq 0 ] && [ -d SRC ]
         then 
             NESTED_FILES=`find $SRC -type f -name '*.mo'`
@@ -51,7 +58,7 @@ for TEST in $TESTS_FILES
                     if [ $NESTED_FILE -nt $WASM ]
                     then 
                         echo "Compiling because $NESTED_FILE changed"
-                        $(vessel bin)/moc $LIBS -wasi-system-api $TEST -o $WASM
+                        compile_test $TEST $WASM
                         IS_COMPILED=1
                         break
                     fi
