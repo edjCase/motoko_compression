@@ -43,12 +43,12 @@ module {
             input_size;
         };
 
-        public func encodeBlob(blob : Blob) : async () {
+        public func encodeBlob(blob : Blob) {
             let bytes = Blob.toArray(blob);
-            await encode(bytes);
+            encode(bytes);
         };
 
-        public func encode(bytes : [Nat8]) : async () {
+        public func encode(bytes : [Nat8]) {
             var curr_index = 0;
 
             while (curr_index < bytes.size()) {

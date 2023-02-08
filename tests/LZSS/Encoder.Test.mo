@@ -118,7 +118,7 @@ let success = run([
 
                     let blob = Text.encodeUtf8(Dickens.text);
                     for (_ in Iter.range(1, 5)){
-                        await lzss.encodeBlob(blob);
+                        lzss.encodeBlob(blob);
                         // Debug.print(debug_show Text.decodeUtf8(decoded));
                         Debug.print("Dickens text size: " # debug_show (lzss.inputSize()));
                         Debug.print("Dickens encoded size: " # debug_show (lzss.size()));
