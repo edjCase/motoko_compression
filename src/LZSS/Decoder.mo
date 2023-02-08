@@ -1,5 +1,6 @@
 import Blob "mo:base/Blob";
 import Buffer "mo:base/Buffer";
+import Debug "mo:base/Debug";
 
 import It "mo:itertools/Iter";
 
@@ -11,24 +12,33 @@ module{
 
     public func decode (compressed_buffer: Buffer<LZSSEntry>): Blob {
         let compressed_data = Buffer.toArray(compressed_buffer);
-        let bytes = Buffer.Buffer<Nat8>(8);
+        let buffer = Buffer.Buffer<Nat8>(8);
 
         for (entry in compressed_data.vals()) {
             switch(entry){
                 case(#literal(byte)){
-                    bytes.add(byte);
+                    buffer.add(byte);
                 };
-                case(#ref((backward_offset, len))){
-                    let index = (bytes.size() - backward_offset) : Nat;
+                case(#pointer((backward_offset, len))){
+                    if (backward_offset > buffer.size()){
+                        Debug.trap("LZSS decode(): Invalid LZSS #pointer (backward_offset > decompressed data size)");
+                    };
 
+                    let index = ((buffer.size() - backward_offset) : Nat) : Nat;
+                    
                     for (i in It.range(index, index + len)){
-                        bytes.add(bytes.get(i));
+                        if (i >= buffer.size()){
+                            let rle_index = index + (i % buffer.size());
+                            buffer.add(buffer.get(rle_index));
+                        }else{
+                            buffer.add(buffer.get(i));
+                        }
                     };
                 };
             }
         };
 
-        let array = Buffer.toArray(bytes);
+        let array = Buffer.toArray(buffer);
         Blob.fromArray(array);
     };
 }

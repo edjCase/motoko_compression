@@ -58,7 +58,7 @@ module {
                             let byte = bytes[curr_index];
                             result_buffer.add(#literal(byte));
                         } else {
-                            result_buffer.add(#ref((backward_offset, len)));
+                            result_buffer.add(#pointer((backward_offset, len)));
                         };
 
                         for (i in It.range(0, len)) {
@@ -160,7 +160,7 @@ module {
                         let byte = bytes[char_index];
                         buffer.add(#literal(byte));
                     } else {
-                        buffer.add(#ref(pointer));
+                        buffer.add(#pointer(pointer));
                     };
 
                     char_index += forward_match_len;

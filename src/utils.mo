@@ -4,6 +4,7 @@ import Deque "mo:base/Deque";
 import Iter "mo:base/Iter";
 import List "mo:base/List";
 import Nat8 "mo:base/Nat8";
+import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 
 import Deiter "mo:itertools/Deiter";
@@ -77,6 +78,14 @@ module {
                 is_elem_equal,
             );
         };
+    };
+
+    public func nat8_to_32(n: Nat8): Nat32 {
+        Nat32.fromNat(Nat8.toNat(n));
+    };
+
+    public func nat8_to_16(n: Nat8): Nat16 {
+        Nat16.fromNat(Nat8.toNat(n));
     };
 
     public func nat8_hash(n : Nat8) : Hash.Hash {

@@ -28,7 +28,7 @@ func _size(buffer: Buffer.Buffer<LZSS.LZSSEntry>): Nat{
             case (#literal(_)) {
                 size += 1;
             };
-            case (#ref(_, _)) {
+            case (#pointer(_, _)) {
                 size += 2;
             };
         };
@@ -62,7 +62,7 @@ let success = run([
 
             //                 let encoded = LZSS.encode(bytes);
             //                 Debug.print(debug_show Buffer.toArray(encoded));
-            //                 let res = [#literal(0x61), #literal(0x62), #literal(0x63), #ref(3, 5), #literal(0x64)];
+            //                 let res = [#literal(0x61), #literal(0x62), #literal(0x63), #pointer(3, 5), #literal(0x64)];
             //                 Debug.print(debug_show res);
 
             //                 Buffer.toArray(encoded) == res;
@@ -85,7 +85,7 @@ let success = run([
             //                     #literal(0x2d),
             //                     #literal(0x63),
             //                     #literal(0x68),
-            //                     #ref(6, 9),
+            //                     #pointer(6, 9),
             //                     #literal(0x64),
             //                 ];
             //                 Debug.print(debug_show res);
