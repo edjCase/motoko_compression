@@ -14,7 +14,7 @@ fi
 compile_test () {
     # $1 - test file
     # $2 - wasm output file
-  $(vessel bin)/moc $LIBS -wasi-system-api $1 -o $2 --force-gc --compacting-gc
+    $(vessel bin)/moc $LIBS -wasi-system-api $1 -o $2 --force-gc --compacting-gc
 }
 
 for TEST in $TESTS_FILES

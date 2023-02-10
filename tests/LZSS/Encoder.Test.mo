@@ -1,14 +1,17 @@
 import Array "mo:base/Array";
+import Blob "mo:base/Blob";
 import Buffer "mo:base/Buffer";
 import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
 
+import It "mo:itertools/Iter";
+
 import ActorSpec "../utils/ActorSpec";
 
 import LZSS "../../src/LZSS";
-import Dickens "../data-files/dickens4";
+import Dickens "../data-files/dickens5";
 
 let {
     assertTrue;
@@ -21,10 +24,10 @@ let {
     run;
 } = ActorSpec;
 
-func _size(buffer: Buffer.Buffer<LZSS.LZSSEntry>): Nat{
+func _size(buffer : Buffer.Buffer<LZSS.LZSSEntry>) : Nat {
     var size = 0;
-    for (entry in buffer.vals()){
-        switch(entry){
+    for (entry in buffer.vals()) {
+        switch (entry) {
             case (#literal(_)) {
                 size += 1;
             };
@@ -41,92 +44,97 @@ let success = run([
     describe(
         "LZSS Encoding",
         [
-            // it(
-            //     "encoding",
-            //     do {
-            //         let bytes = Text.encodeUtf8("abracadabra");
-            //         let encoded = LZSS.encode(bytes);
-            //         Debug.print(debug_show Buffer.toArray(encoded));
-            //         let decoded = LZSS.decode(encoded);
-            //         Debug.print(debug_show Text.decodeUtf8(decoded));
-            //         assertTrue(true);
-            //     },
-            // ),
-            // describe(
-            //     "encode repeated patterns",
-            //     [
-            //         it(
-            //             "'abcaaaaad' -> 'abc<3,5>d'",
-            //             do {
-            //                 let bytes = Text.encodeUtf8("abcaaaaad");
+            it(
+                "encoding",
+                do {
+                    let bytes = Text.encodeUtf8("abracadabra");
+                    let encoded = LZSS.encode(bytes);
+                    let decoded = LZSS.decode(encoded);
+                    assertTrue(bytes == decoded);
+                },
+            ),
+            describe(
+                "encode repeated patterns",
+                [
+                    it(
+                        "'abcaaaaad' -> 'abc<3,5>d'",
+                        do {
+                            let bytes = Text.encodeUtf8("abcaaaaad");
+                            let encoded = LZSS.encode(bytes);
 
-            //                 let encoded = LZSS.encode(bytes);
-            //                 Debug.print(debug_show Buffer.toArray(encoded));
-            //                 let res = [#literal(0x61), #literal(0x62), #literal(0x63), #pointer(3, 5), #literal(0x64)];
-            //                 Debug.print(debug_show res);
+                            Buffer.toArray(encoded) == [
+                                #literal(0x61 : Nat8),
+                                #literal(0x62 : Nat8),
+                                #literal(0x63 : Nat8),
+                                #pointer(3, 5),
+                                #literal(0x64 : Nat8),
+                            ];
+                        },
+                    ),
 
-            //                 Buffer.toArray(encoded) == res;
-            //             },
-            //         ),
+                    // it(
+                    //     "'fr-en-ch-en-en-end' -> 'fr-en-ch<6,9>d'",
+                    //     do {
+                    //         let bytes = Text.encodeUtf8("fr-en-ch-en-en-end");
+                    //         let encoded = LZSS.encode(bytes);
 
-            //         it(
-            //             "'fr-en-ch-en-en-end' -> 'fr-en-ch<6,9>d'",
-            //             do {
-            //                 let bytes = Text.encodeUtf8("fr-en-ch-en-en-end");
+                    //         Buffer.toArray(encoded) == [
+                    //             #literal(0x66 : Nat8),
+                    //             #literal(0x72 : Nat8),
+                    //             #literal(0x2d : Nat8),
+                    //             #literal(0x65 : Nat8),
+                    //             #literal(0x6e : Nat8),
+                    //             #literal(0x2d : Nat8),
+                    //             #literal(0x63 : Nat8),
+                    //             #literal(0x68 : Nat8),
+                    //             #pointer(6, 9),
+                    //             #literal(0x64 : Nat8),
+                    //         ];
+                    //     },
+                    // ),
 
-            //                 let encoded = LZSS.encode(bytes);
-            //                 Debug.print(debug_show Buffer.toArray(encoded));
-            //                 let res = [
-            //                     #literal(0x66),
-            //                     #literal(0x72),
-            //                     #literal(0x2d),
-            //                     #literal(0x65),
-            //                     #literal(0x6e),
-            //                     #literal(0x2d),
-            //                     #literal(0x63),
-            //                     #literal(0x68),
-            //                     #pointer(6, 9),
-            //                     #literal(0x64),
-            //                 ];
-            //                 Debug.print(debug_show res);
+                ],
+            ),
+            describe(
+                "Multi Step Encoder class",
+                [
+                    it(
+                        "encoding",
+                        do {
+                            let bytes = Text.encodeUtf8("abracadabra");
+                            let lzss = LZSS.PrefixTableEncoder();
 
-            //                 Buffer.toArray(encoded) == res;
-            //             },
-            //         ),
+                            lzss.encodeBlob(bytes);
+                            let encoded = lzss.getCompressedBytes();
 
-            //     ],
-            // ),
-            // describe("Encode Large text" , [
-            //     it("dickens novels", do{
-            //         let bytes = Text.encodeUtf8(Dickens.text);
-            //         for (_ in Array.init<Nat>(5, 0).vals()){
-            //             let encoded = LZSS.encode(bytes);
-            //             // Debug.print(debug_show Buffer.toArray(encoded));
-            //             let decoded = LZSS.decode(encoded);
-            //             // Debug.print(debug_show Text.decodeUtf8(decoded));
-            //             Debug.print("Dickens text size: " # debug_show (Dickens.text.size()));
-            //             Debug.print("Dickens encoded size: " # debug_show (_size(encoded)));
-            //         };
+                            let decoded = LZSS.decode(encoded);
+                            assertTrue(bytes == decoded);
+                        },
+                    ),
+                    it(
+                        "Prefix Encoder",
+                        do {
+                            for (i in It.range(0, 10)) {
 
-            //         assertTrue(true);
-            //     }),
-            // ]),
+                                let lzss = LZSS.PrefixTableEncoder();
+                                let blob = Text.encodeUtf8(Dickens.text);
+                                lzss.encodeBlob(blob);
 
-            describe("Multi Step Encoder class" , [
-                it("Encoded Large text (dickens novel)", do{
-                    let lzss = LZSS.Encoder();
+                                // Debug.print(debug_show Text.decodeUtf8(decoded));
+                                Debug.print("No: " # debug_show (i + 1));
+                                Debug.print("Dickens text size: " # debug_show (lzss.inputSize()));
+                                Debug.print("Dickens encoded size: " # debug_show (lzss.size()));
 
-                    let blob = Text.encodeUtf8(Dickens.text);
-                    for (_ in Iter.range(1, 5)){
-                        lzss.encodeBlob(blob);
-                        // Debug.print(debug_show Text.decodeUtf8(decoded));
-                        Debug.print("Dickens text size: " # debug_show (lzss.inputSize()));
-                        Debug.print("Dickens encoded size: " # debug_show (lzss.size()));
-                    };
-
-                    assertTrue(true);
-                }),
-            ]),
+                                let compressed = lzss.getCompressedBytes();
+                                let decoded = LZSS.decode(compressed);
+                                assert decoded == blob;
+                            };
+                            Debug.print("Prefix Encoder: Success!");
+                            assertTrue(true);
+                        },
+                    ),
+                ],
+            ),
         ],
     ),
 ]);
