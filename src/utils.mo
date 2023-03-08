@@ -17,6 +17,27 @@ module {
     type Hash = Hash.Hash;
     type List<A> = List.List<A>;
     
+    public func nat_to_bytes(num : Nat, nbytes: Nat): [Nat8] {
+        var n = num;
+
+        Array.tabulate(
+            nbytes,
+            func (_: Nat) : Nat8 {
+                if ( n == 0) {
+                    return 0;
+                };
+
+                let byte = Nat8.fromNat(n % 256);
+                n /= 256;
+                byte
+            }
+        )
+    };
+
+    public func nat_to_le_bytes(num : Nat, nbytes: Nat): [Nat8] {
+        Array.reverse(nat_to_bytes(num, nbytes));
+    };
+
     public func array_equal<A>(is_elem_equal : (A, A) -> Bool) : ([A], [A]) -> Bool {
         func(a : [A], b : [A]) : Bool {
             Array.equal(a, b, is_elem_equal);

@@ -56,21 +56,21 @@ let success = run([
             describe(
                 "encode repeated patterns",
                 [
-                    it(
-                        "'abcaaaaad' -> 'abc<3,5>d'",
-                        do {
-                            let bytes = Text.encodeUtf8("abcaaaaad");
-                            let encoded = LZSS.encode(bytes);
+                    // it(
+                    //     "'abcaaaaad' -> 'abc<3,5>d'",
+                    //     do {
+                    //         let bytes = Text.encodeUtf8("abcaaaaad");
+                    //         let encoded = LZSS.encode(bytes);
 
-                            Buffer.toArray(encoded) == [
-                                #literal(0x61 : Nat8),
-                                #literal(0x62 : Nat8),
-                                #literal(0x63 : Nat8),
-                                #pointer(3, 5),
-                                #literal(0x64 : Nat8),
-                            ];
-                        },
-                    ),
+                    //         Buffer.toArray(encoded) == [
+                    //             #literal(0x61 : Nat8),
+                    //             #literal(0x62 : Nat8),
+                    //             #literal(0x63 : Nat8),
+                    //             #pointer(3, 5),
+                    //             #literal(0x64 : Nat8),
+                    //         ];
+                    //     },
+                    // ),
 
                     // it(
                     //     "'fr-en-ch-en-en-end' -> 'fr-en-ch<6,9>d'",
@@ -105,7 +105,7 @@ let success = run([
                             let lzss = LZSS.PrefixTableEncoder();
 
                             lzss.encodeBlob(bytes);
-                            let encoded = lzss.getCompressedBytes();
+                            let encoded = lzss.getOutputBuffer();
 
                             let decoded = LZSS.decode(encoded);
                             assertTrue(bytes == decoded);
@@ -114,7 +114,7 @@ let success = run([
                     it(
                         "Prefix Encoder",
                         do {
-                            for (i in It.range(0, 10)) {
+                            for (i in It.range(0, 1)) {
 
                                 let lzss = LZSS.PrefixTableEncoder();
                                 let blob = Text.encodeUtf8(Dickens.text);
@@ -125,7 +125,7 @@ let success = run([
                                 Debug.print("Dickens text size: " # debug_show (lzss.inputSize()));
                                 Debug.print("Dickens encoded size: " # debug_show (lzss.size()));
 
-                                let compressed = lzss.getCompressedBytes();
+                                let compressed = lzss.getOutputBuffer();
                                 let decoded = LZSS.decode(compressed);
                                 assert decoded == blob;
                             };

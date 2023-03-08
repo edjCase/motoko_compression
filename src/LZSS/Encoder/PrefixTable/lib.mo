@@ -46,6 +46,10 @@ module {
             len : Nat,
             index : Nat
         ) : ?Nat {
+            if (bytes.size() < (start +  len)){
+                Debug.trap("PrefixTable.insert: bytes.size() < (start +  len)");
+            };
+
             switch table {
                 case (#small(small_table)) {
                     let iter = It.fromArraySlice(bytes, start, start + len);

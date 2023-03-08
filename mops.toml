@@ -2,3 +2,7 @@
 base = "0.8.1"
 itertools = "0.1.1"
 CircularBuffer = "https://github.com/NatLabs/CircularBuffer#main"
+bitbuffer = "https://github.com/NatLabs/BitBuffer#main"
+icrc1 = "0.0.1"
+xtended-numbers = "0.2.0"
+hash = "https://github.com/tomijaga/hash.mo#master"

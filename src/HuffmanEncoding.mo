@@ -1,3 +1,5 @@
 module {
-    
+    public class Encoder(){
+
+    }
 }

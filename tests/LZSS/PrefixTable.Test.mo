@@ -25,14 +25,14 @@ let success = run([
                     let table = PrefixTable.PrefixTable();
 
                     let bytes : [Nat8] = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5];
-                
+
                     assertAllTrue([
                         table.insert(bytes, 0, 3, 0) == null, // [1, 2, 3]
                         table.insert(bytes, 1, 3, 1) == null, // [2, 3, 4]
                         table.insert(bytes, 2, 3, 2) == null, // [3, 4, 5]
 
-                        table.insert(bytes, 5, 3, 5) == ?0, 
-                        table.insert(bytes, 6, 3, 6) == ?1, 
+                        table.insert(bytes, 5, 3, 5) == ?0,
+                        table.insert(bytes, 6, 3, 6) == ?1,
                         table.insert(bytes, 7, 3, 7) == ?2,
 
                         table.insert(bytes, 10, 3, 10) == ?5,
