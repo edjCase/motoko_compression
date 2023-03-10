@@ -15,3 +15,9 @@ no-warn:
 docs: 
 	$(shell vessel bin)/mo-doc
 	$(shell vessel bin)/mo-doc --format plain
+
+gz-stat: 
+	python3 ./gzstat/gzstat.py --print-block-codes --decode-blocks < output.gz > output.stat
+
+gz-d:
+	 gzip -d -c output.gz > output      

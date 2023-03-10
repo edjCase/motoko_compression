@@ -14,7 +14,29 @@ module {
 
     type Deque<A> = Deque.Deque<A>;
     type Iter<A> = Iter.Iter<A>;
+    type Hash = Hash.Hash;
     type List<A> = List.List<A>;
+    
+    public func nat_to_le_bytes(num : Nat, nbytes: Nat): [Nat8] {
+        var n = num;
+
+        Array.tabulate(
+            nbytes,
+            func (_: Nat) : Nat8 {
+                if ( n == 0) {
+                    return 0;
+                };
+
+                let byte = Nat8.fromNat(n % 256);
+                n /= 256;
+                byte
+            }
+        )
+    };
+
+    public func nat_to_bytes(num : Nat, nbytes: Nat): [Nat8] {
+        Array.reverse(nat_to_bytes(num, nbytes));
+    };
 
     public func array_equal<A>(is_elem_equal : (A, A) -> Bool) : ([A], [A]) -> Bool {
         func(a : [A], b : [A]) : Bool {
@@ -33,6 +55,22 @@ module {
             );
 
             hashNat8(hashed_elements);
+        };
+    };
+
+    public func iter_hash<A>(elem_hash : (A) -> Hash.Hash) : (Iter<A>) -> Hash.Hash {
+        func(iter : Iter<A>) : Hash.Hash {
+
+            var hash : Nat32 = 0;
+
+            hashNat8Iter(
+                Iter.map(
+                    iter,
+                    func(a : A) : Hash.Hash {
+                        elem_hash(a);
+                    },
+                )
+            )
         };
     };
 
@@ -105,4 +143,20 @@ module {
         hash := hash +% hash << 15;
         return hash;
     };
+
+    func hashNat8Iter(iter: Iter<Hash>) : Hash{
+        var hash : Nat32 = 0;
+        for (natOfKey in iter) {
+            hash := hash +% natOfKey;
+            hash := hash +% hash << 10;
+            hash := hash ^ (hash >> 6);
+        };
+
+        hash := hash +% hash << 3;
+        hash := hash ^ (hash >> 11);
+        hash := hash +% hash << 15;
+
+        return hash;
+    };
+    
 };

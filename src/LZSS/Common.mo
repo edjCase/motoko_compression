@@ -1,6 +1,12 @@
+import Buffer "mo:base/Buffer";
+
 import It "mo:itertools/Iter";
 
+import Utils "../utils";
+
 module {
+    type Buffer<A> = Buffer.Buffer<A>;
+
     /// An entry in the compression table
     public type LZSSEntry = {
         /// represents a single byte that wasn't matched
@@ -24,6 +30,6 @@ module {
         #best;
     };
 
-    /// encode LZSS entry to bytes
-    public func encodeEntry(entry : LZSSEntry) : [Nat8] { [] };
+    public let MATCH_WINDOW_SIZE = 32_768;
+    public let MATCH_MAX_SIZE = 258;
 };
