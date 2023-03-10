@@ -12,7 +12,6 @@ import Result "mo:base/Result";
 import TrieMap "mo:base/TrieMap";
 
 import It "mo:itertools/Iter";
-import Deiter "mo:itertools/Deiter";
 import CircularBuffer "mo:circular-buffer";
 
 import Common "../Common";

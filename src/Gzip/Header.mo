@@ -6,7 +6,6 @@ import Nat64 "mo:base/Nat64";
 import Time "mo:base/Time";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
-import NatX "mo:xtended-numbers/NatX";
 
 module {
     type Buffer<A> = Buffer.Buffer<A>;

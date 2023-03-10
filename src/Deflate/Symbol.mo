@@ -3,7 +3,6 @@ import Debug "mo:base/Debug";
 import Nat16 "mo:base/Nat16";
 import Iter "mo:base/Iter";
 
-import It "mo:itertools/Iter";
 import BitBuffer "mo:bitbuffer/BitBuffer";
 
 import Common "../LZSS/Common";

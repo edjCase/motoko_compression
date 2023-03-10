@@ -11,7 +11,6 @@ import Time "mo:base/Time";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
 import CRC32 "mo:hash/CRC32";
-import NatX "mo:xtended-numbers/NatX";
 
 import Deflate "../Deflate";
 import Lzss "../LZSS";

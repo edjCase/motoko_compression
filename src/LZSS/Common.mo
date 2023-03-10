@@ -1,7 +1,5 @@
 import Buffer "mo:base/Buffer";
 
-import It "mo:itertools/Iter";
-
 import Utils "../utils";
 
 module {
