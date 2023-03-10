@@ -126,7 +126,6 @@ module {
         bitbuffer.addByte(os);
 
         // - extra fields
-        
         let extra_fields = header_options.extra_fields;
 
         if (extra_fields.size() > 0){

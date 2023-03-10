@@ -5,7 +5,7 @@ import Blob "mo:base/Blob";
 
 import ActorSpec "./utils/ActorSpec";
 import Gzip "../src/Gzip";
-import Dickens "./data-files/dickens7";
+import Dickens "./data-files/dickens5";
 
 let {
     assertTrue;
