@@ -22,7 +22,7 @@ jobs:
 
             - name: install mops
               run: |
-                  npm --yes -g i ic-mops
+                  npm --yes -g i ic-mops@0.8.3
                   mops i
                   mops sources
             
@@ -36,6 +36,3 @@ jobs:
 
             - name: Run Tests
               run: make compile-tests 
-
-            # - name: Generate Docs
-            #   run: make docs
