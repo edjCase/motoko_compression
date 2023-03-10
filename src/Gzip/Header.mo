@@ -80,7 +80,7 @@ module {
         filename : ?Text;
         comment : ?Text;
         modification_time : ?Time;
-        // compression_level: CompressionLevel;
+        compression_level: CompressionLevel;
         os : Os;
     };
 

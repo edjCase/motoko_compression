@@ -17,7 +17,7 @@ module {
     type Hash = Hash.Hash;
     type List<A> = List.List<A>;
     
-    public func nat_to_bytes(num : Nat, nbytes: Nat): [Nat8] {
+    public func nat_to_le_bytes(num : Nat, nbytes: Nat): [Nat8] {
         var n = num;
 
         Array.tabulate(
@@ -34,7 +34,7 @@ module {
         )
     };
 
-    public func nat_to_le_bytes(num : Nat, nbytes: Nat): [Nat8] {
+    public func nat_to_bytes(num : Nat, nbytes: Nat): [Nat8] {
         Array.reverse(nat_to_bytes(num, nbytes));
     };
 

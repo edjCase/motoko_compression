@@ -1,0 +1,3 @@
+[submodule "gzstat"]
+	path = gzstat
+	url = https://github.com/billbird/gzstat

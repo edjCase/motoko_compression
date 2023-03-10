@@ -1,3 +1,4 @@
+import Array "mo:base/Array";
 import Blob "mo:base/Blob";
 import Buffer "mo:base/Buffer";
 import Option "mo:base/Option";
@@ -9,11 +10,13 @@ import Text "mo:base/Text";
 import Time "mo:base/Time";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
-import CRC32 "../deps/CRC32";
+import CRC32 "mo:hash/CRC32";
 import NatX "mo:xtended-numbers/NatX";
 
 import Deflate "../Deflate";
+import Lzss "../LZSS";
 import Header "Header";
+
 import { nat_to_le_bytes } "../utils";
 
 module {
@@ -22,7 +25,7 @@ module {
     type Time = Time.Time;
 
     public type HeaderOptions = Header.HeaderOptions;
-    public type DeflateOptions = Header.DeflateOptions;
+    public type DeflateOptions = Deflate.DeflateOptions;
     
     type DeflateEncoder = {
         encode: ([Nat8]) -> ();
@@ -41,14 +44,15 @@ module {
             extra_fields = [];
             filename = null;
             comment = null;
-            modification_time = ?Time.now();
+            modification_time = ?12; // Time.now() doesn't work locally
+            compression_level = #Unknown;
             os = #Unix;
         };
 
         var deflate_options : DeflateOptions = {
-            lzss = null;
+            lzss = ?Lzss.Encoder(null);
             block_size = 32 * 1024;
-            dynamic_huffman = true;
+            dynamic_huffman = false;
         };
 
         public func header(options: HeaderOptions) : EncoderBuilder {
@@ -56,25 +60,25 @@ module {
             self
         };
 
-        public func noCompresstion() : EncoderBuilder{
+        public func noCompression() : EncoderBuilder{
             deflate_options := { deflate_options with lzss = null };
             header_options := { header_options with compression_level = #Unknown };
             self
         };
 
-        public func lzss(lzss: Lzss) : EncoderBuilder {
-            deflate_options := { deflate_options with lzss = lzss };
+        public func lzss(encoder: Lzss.Encoder) : EncoderBuilder {
+            deflate_options := { deflate_options with lzss = ?encoder };
             // let compression_level = lzss.compressionLevel(lzss);
             // header_options := { header_options with compression_level = #Lzss };
             self
         };
 
-        public func blockSize(size: Nat32) : EncoderBuilder {
+        public func blockSize(size: Nat) : EncoderBuilder {
             deflate_options := { deflate_options with block_size = size };
             self
         };
 
-        public func build() : GZipEncoder {
+        public func build() : GzipEncoder {
             GzipEncoder(header_options, deflate_options)
         };
     };
@@ -85,8 +89,8 @@ module {
 
     public class GzipEncoder(header_options: HeaderOptions, deflate_options: DeflateOptions) {
         var input_size = 0;
-        var crc32 : Nat32 = 0;
-        let bitbuffer = BitBuffer.BitBuffer<Nat32>(Nat32, 8);
+        var crc32_builder = CRC32.CRC32();
+        let bitbuffer = BitBuffer.BitBuffer<Nat16>(Nat16, 8);
         
         // Add Header bytes to the bitbuffer
         // - magic header
@@ -107,7 +111,7 @@ module {
         // - modification time
         let mtime = switch(header_options.modification_time) {
             case (?t) { t };
-            case (_) { Time.now() / 10 ** 9 };
+            case (_) { 0 /* (Time.now() / 10 ** 9)  but it doesn't work locally */ };
         };
 
         let mtime_nat = Int.abs(mtime);
@@ -122,20 +126,25 @@ module {
         bitbuffer.addByte(os);
 
         // - extra fields
-        var fields_total_size = 0;
-
-        for ({data} in header_options.extra_fields.vals()){
-            fields_total_size += (4 + data.size());
-        };
         
-        bitbuffer.addBytes(nat_to_le_bytes(fields_total_size, 2));
+        let extra_fields = header_options.extra_fields;
 
-        for (field in header_options.extra_fields.vals()){
-            bitbuffer.addByte(field.ids.0);
-            bitbuffer.addByte(field.ids.1);
+        if (extra_fields.size() > 0){
+            var fields_total_size = 0;
 
-            bitbuffer.addBytes(nat_to_le_bytes(field.data.size(), 2));
-            bitbuffer.addBytes(field.data);
+            for ({data} in header_options.extra_fields.vals()){
+                fields_total_size += (4 + data.size());
+            };
+
+            bitbuffer.addBytes(nat_to_le_bytes(fields_total_size, 2));
+
+            for (field in header_options.extra_fields.vals()){
+                bitbuffer.addByte(field.ids.0);
+                bitbuffer.addByte(field.ids.1);
+
+                bitbuffer.addBytes(nat_to_le_bytes(field.data.size(), 2));
+                bitbuffer.addBytes(field.data);
+            };
         };
 
         // - filename
@@ -168,25 +177,26 @@ module {
             bitbuffer.addBytes(nat_to_le_bytes(crc16, 2));
         };
 
-
         // Compression
+        let deflate = Deflate.Deflate(bitbuffer, deflate_options);
+        
         public func encode(bytes: [Nat8]){
             input_size += bytes.size();
-            crc32 := CRC32.update(crc32, bytes);
+            crc32_builder.update(bytes);
             deflate.encode(bytes);
         };
 
         // Finish and add the Footer
         public func finish() : Blob {
-            deflate.finish(bitbuffer);
+            ignore deflate.finish();
 
             // pad the bitbuffer with zero bits until it has a multiple of 8 bits
             bitbuffer.byteAlign();
 
             // Footer
             // - crc32
-            let crc = Nat32.toNat(crc32);
-            bitbuffer.addBytes(nat_to_le_bytes(crc, 4));
+            let crc32 = crc32_builder.finish();
+            bitbuffer.addBytes(nat_to_le_bytes(Nat32.toNat(crc32), 4));
 
             // - input size
             bitbuffer.addBytes(nat_to_le_bytes(input_size, 4));

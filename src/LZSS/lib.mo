@@ -12,6 +12,7 @@ module {
     public func encode(blob: Blob) : Buffer<LZSSEntry> = LZSSEncoder.encode(blob);
     public let decode = Decoder.decode;
 
+    public type Encoder = LZSSEncoder.Encoder;
     public let Encoder = LZSSEncoder.Encoder;
 
 }
