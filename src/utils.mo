@@ -38,6 +38,21 @@ module {
         Array.reverse(nat_to_bytes(num, nbytes));
     };
 
+    public func bytes_to_nat(bytes: [Nat8]) : Nat {
+        var n : Nat = 0;
+        
+        for (byte in bytes.vals()) {
+            n *= 256;
+            n += Nat8.toNat(byte);
+        };
+
+        n
+    };
+
+    public func le_bytes_to_nat(bytes: [Nat8]) : Nat {
+        bytes_to_nat(Array.reverse(bytes));
+    };
+
     public func array_equal<A>(is_elem_equal : (A, A) -> Bool) : ([A], [A]) -> Bool {
         func(a : [A], b : [A]) : Bool {
             Array.equal(a, b, is_elem_equal);

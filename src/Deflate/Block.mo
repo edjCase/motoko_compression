@@ -16,7 +16,7 @@ import Huffman "../Huffman";
 import { nat_to_le_bytes } "../utils";
 
 module {
-    type BitBuffer<NatX> = BitBuffer.BitBuffer<NatX>;
+    type BitBuffer = BitBuffer.BitBuffer;
 
     public let NO_COMPRESSION_MAX_BLOCK_SIZE = 65535;
 
@@ -46,7 +46,7 @@ module {
     public type BlockInterface = {
         size : () -> Nat;
         append : ([Nat8]) -> ();
-        flush : (BitBuffer<Nat16>) -> ();
+        flush : (BitBuffer) -> ();
     };
 
     public func Block(block_type: BlockType, opt_lzss: ?Lzss.Encoder): BlockInterface {
@@ -60,8 +60,8 @@ module {
                 let lzss = Option.get(opt_lzss, Lzss.Encoder(null));
                 
                 switch(_block_type) {
-                    case (#Fixed)  Compress(lzss, Symbol.FixedCodec());
-                    case (#Dynamic) Compress(lzss, Symbol.FixedCodec());
+                    case (#Fixed)  Compress(lzss, Symbol.FixedHuffmanCodec());
+                    case (#Dynamic) Compress(lzss, Symbol.FixedHuffmanCodec());
                     case _ Debug.trap("Invalid block type");
                 };
             };
@@ -83,7 +83,7 @@ module {
             };
         };
 
-        public func flush(bitbuffer : BitBuffer<Nat16>) {
+        public func flush(bitbuffer : BitBuffer) {
             if (not byte_aligned) {
                 bitbuffer.byteAlign();
                 byte_aligned := true;
@@ -92,23 +92,23 @@ module {
             let size = Nat.min(NO_COMPRESSION_MAX_BLOCK_SIZE, input_size);
 
             let size_as_bytes = nat_to_le_bytes(size, 2);
-            bitbuffer.addBytes(size_as_bytes);
+            BitBuffer.addBytes(bitbuffer, size_as_bytes);
 
             let bitnot_size_as_bytes = Array.map<Nat8, Nat8>(size_as_bytes, func(x : Nat8) { ^x });
-            bitbuffer.addBytes(bitnot_size_as_bytes);
+            BitBuffer.addBytes(bitbuffer, bitnot_size_as_bytes);
 
             for (i in Iter.range(0, size - 1)) {
                 let ?(byte, xs) = Deque.popFront<Nat8>(deque) else { return };
                 deque := xs;
                 input_size -= 1;
-                bitbuffer.addByte(byte);
+                BitBuffer.addByte(bitbuffer, byte);
             };
         };
     };
 
-    public class Compress(lzss : Lzss.Encoder, huffman : Symbol.FixedCodec) {
+    public class Compress(lzss : Lzss.Encoder, huffman : Symbol.FixedHuffmanCodec) {
         var input_size = 0;
-        let buffer = Buffer.Buffer<Lzss.LZSSEntry>(8);
+        let buffer = Buffer.Buffer<Symbol.Symbol>(8);
         
         public func size() : Nat {
             return input_size;
@@ -116,12 +116,21 @@ module {
 
         public func append(bytes : [Nat8]) {
             input_size += bytes.size();
-            lzss.encode(bytes, buffer);
+            let sink = {
+                add = func  (symbol: Lzss.LZSSEntry) {
+                    buffer.add(symbol);
+                };
+            };
+            
+            lzss.encode(bytes, sink);
         };
 
-        public func flush(bitbuffer : BitBuffer<Nat16>) {
+        public func flush(bitbuffer : BitBuffer) {
+            let symbol_encoder_rs = huffman.build(buffer);
+            let #ok(symbol_encoder) = huffman.build(buffer) else {
+                return;
+            };
 
-            let symbol_encoder = huffman.build();
             for (symbol in buffer.vals()){
                 symbol_encoder.encode(bitbuffer, symbol);
             };

@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-import fs, { createReadStream, existsSync, statSync } from "fs";
+import fs, { createReadStream, existsSync, statSync, writeFileSync } from "fs";
 import events from "events";
 import { readFile, stat } from "fs/promises";
 import readline from "readline";
@@ -83,8 +83,16 @@ const is_recently_modified = (file, time) => {
 
     return file_mtime > time;
 };
+ 
+const is_mo_module = (imp_path) => {
+    if (existsSync(imp_path.concat(".mo"))) {
+        imp_path = imp_path.concat(".mo");
+    } else {
+        imp_path = imp_path.concat("/lib.mo");
+    }
+}
 
-const is_dep_tree_recently_modified = async (file, wasm_mtime, visited) => {
+const is_dep_tree_recently_modified = async (file, wasm_mtime, visited, check_imported_pkgs = false) => {
     let modified = is_recently_modified(file, wasm_mtime);
 
     if (modified) {
@@ -96,21 +104,21 @@ const is_dep_tree_recently_modified = async (file, wasm_mtime, visited) => {
     // console.log({file, imports})
 
     for (let imp_path of imports) {
+        
         if (imp_path.startsWith("mo:")) {
-            let pkg = imp_path.slice(3).split("/")[0];
-            let pkg_path = packages[pkg];
+            let segments = imp_path.slice(3).split("/");
+            let pkg_name = segments[0];
+            let pkg_path = segments.slice(1).join("/");
 
-            pkg_path = (await glob(pkg_path + "/**/*.mo"))[0];
+            let pkg_src = packages[pkg_name];
 
-            if (pkg_path && !visited.has(pkg_path)) {
-                visited.add(pkg_path);
-                modified = is_recently_modified(pkg_path, wasm_mtime);
-            }
+            if (!pkg_src) continue;
+            
+            imp_path = path.resolve(pkg_src, pkg_path);
 
-            continue;
+        }else {
+            imp_path = path.resolve(path.dirname(file), imp_path);
         }
-
-        imp_path = path.resolve(path.dirname(file), imp_path);
 
         if (existsSync(imp_path.concat(".mo"))) {
             imp_path = imp_path.concat(".mo");
@@ -155,10 +163,10 @@ const wasm_files = await Promise.all(
     test_files.map(compile_test)
 );
 
-let res = ""
-
 for (const wasm_file of wasm_files) {
-    res += (await $`wasmtime ${wasm_file}`).toString();
-}
+    let res = await $`wasmtime ${wasm_file}`;
 
-// fs.writeFileSync("output.data", res, "utf8");
+    if (wasm_file.toLowerCase().includes("gzip/encoder")){
+        writeFileSync("output.data", res.toString(), "utf-8");
+    }
+}

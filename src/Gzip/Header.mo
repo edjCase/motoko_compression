@@ -79,9 +79,38 @@ module {
         filename : ?Text;
         comment : ?Text;
         modification_time : ?Time;
-        compression_level: CompressionLevel;
+        compression_level : CompressionLevel;
         os : Os;
     };
+
+    public func defaultHeaderOptions() : HeaderOptions = {
+        is_text = false;
+        is_verified = false;
+        extra_fields = [];
+        filename = null;
+        comment = null;
+        modification_time = ?12; // Time.now() doesn't work locally
+        compression_level = #Unknown;
+        os = #Unix;
+    };
+
+    // public class HeaderBuilder() = self{
+    //     var is_text : Bool;
+    //     var is_verified : Bool;
+    //     var extra_fields : [ExtraField];
+    //     var filename : ?Text;
+    //     var comment : ?Text;
+    //     var modification_time : ?Time;
+    //     var compression_level: CompressionLevel;
+    //     var os : Os;
+
+    //     public func text() : HeaderBuilder {
+    //         self.is_text := true;
+    //         self
+    //     };
+
+    //     public func ex
+    // };
 
     public func compressionLevelToByte(compression_level : CompressionLevel) : Nat8 {
         switch (compression_level) {

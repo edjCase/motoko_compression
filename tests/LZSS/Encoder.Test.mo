@@ -11,7 +11,7 @@ import It "mo:itertools/Iter";
 import ActorSpec "../utils/ActorSpec";
 
 import LZSS "../../src/LZSS";
-import Dickens "../data-files/dickens5";
+import Example "../data-files/dickens5";
 
 let {
     assertTrue;
@@ -96,7 +96,7 @@ let success = run([
                 ],
             ),
             describe(
-                "Multi Step Encoder class",
+                "Class Encoder",
                 [
                     it(
                         "encoding",
@@ -117,12 +117,12 @@ let success = run([
                             for (i in It.range(0, 2)) {
 
                                 let lzss = LZSS.Encoder(null);
-                                let blob = Text.encodeUtf8(Dickens.text);
+                                let blob = Text.encodeUtf8(Example.text);
                                 let buffer = Buffer.Buffer<LZSS.LZSSEntry>(8);
                                 lzss.encodeBlob(blob, buffer);
 
                                 Debug.print("No: " # debug_show (i + 1));
-                                Debug.print("Dickens text size: " # debug_show (lzss.size()));
+                                Debug.print("Example text size: " # debug_show (lzss.size()));
 
                                 let decoded = LZSS.decode(buffer);
                                 assert decoded == blob;

@@ -28,6 +28,10 @@ module {
     type LZSSEntry = Common.LZSSEntry;
     type Result<Ok, Err> = Result.Result<Ok, Err>;
 
+    public type Sink = {
+        add: (entry: LZSSEntry) -> ();
+    };
+
     public func Default() : Encoder {
         Encoder(null);
     };
@@ -35,6 +39,7 @@ module {
     public func encode(blob : Blob) : Buffer<LZSSEntry> {
         let encoder = Default();
         let buffer = Buffer.Buffer<LZSSEntry>(8);
+
         encoder.encodeBlob(blob, buffer);
         buffer
     };
@@ -51,59 +56,12 @@ module {
         public func size() : Nat = input_size;
         public func windowSize() : Nat = window_size;
 
-        public func encodeBlob(blob : Blob, output: Buffer<LZSSEntry>) {
+        public func encodeBlob(blob : Blob, sink: Sink) {
             let bytes = Blob.toArray(blob);
-            encode(bytes, output);
+            encode(bytes, sink);
         };
 
-        public func encodeToIter(bytes : [Nat8]) : Iter<LZSSEntry> = object {
-            var curr_index = 0;
-
-            public func next() : ?LZSSEntry {
-                Debug.print("curr_index: " # debug_show(curr_index));
-                if (curr_index >= bytes.size()) {
-                    return null;
-                };
-
-                if (((bytes.size() - curr_index) : Nat) >= 3) {
-                    let opt_prefix_index = prefix_table.insert(bytes, curr_index, 3, input_size);
-
-                    switch (opt_prefix_index) {
-                        case (?prefix_index) {
-                            let backward_offset = (input_size - prefix_index) : Nat;
-
-                            if (backward_offset <= window_size) {
-                                let search_index = (search_buffer.size() - backward_offset) : Nat;
-
-                                let len = longest_prefix_length(bytes, search_index, curr_index);
-
-                                label for_loop for (i in It.range(0, len)) {
-                                    if ((bytes.size() - (curr_index + i) : Nat) < 3) {
-                                        break for_loop;
-                                    };
-                                    ignore prefix_table.insert(bytes, curr_index + i, 3, input_size + i);
-                                    search_buffer.push(bytes[curr_index + i]);
-                                };
-
-                                curr_index += len;
-                                input_size += len;
-
-                                return ?#pointer(backward_offset, len);
-                            };
-                        };
-                        case (null) {};
-                    };
-                };
-
-                search_buffer.push(bytes[curr_index]);
-                input_size += 1;
-                curr_index += 1;
-
-                ?#literal(bytes[curr_index]);
-            };
-        };
-
-        public func encode(bytes : [Nat8], output: Buffer<LZSSEntry>) {
+        public func encode(bytes : [Nat8], sink: Sink) {
             var curr_index = 0;
 
             label while_loop while (curr_index < bytes.size()) {
@@ -128,7 +86,7 @@ module {
                                     search_buffer.push(bytes[curr_index + i]);
                                 };
                                 
-                                output.add(#pointer(backward_offset, len));
+                                sink.add(#pointer(backward_offset, len));
 
                                 curr_index += len;
                                 input_size += len;
@@ -143,7 +101,7 @@ module {
                 search_buffer.push(bytes[curr_index]);
                 input_size += 1;
 
-                output.add(#literal(bytes[curr_index]));
+                sink.add(#literal(bytes[curr_index]));
                 curr_index += 1;
             };
         };

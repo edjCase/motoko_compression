@@ -20,4 +20,5 @@ gz-stat:
 	python3 ./gzstat/gzstat.py --print-block-codes --decode-blocks < output.gz > output.stat
 
 gz-d:
-	 gzip -d -c output.gz > output      
+	node blob-to-gz $(param)
+	gzip -d -c output.gz > output      
