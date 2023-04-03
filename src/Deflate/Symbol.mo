@@ -10,8 +10,11 @@ import BitBuffer "mo:bitbuffer/BitBuffer";
 
 import Common "../LZSS/Common";
 import Utils "../utils";
-import Huffman "../Huffman";
+import HuffmanEncoder "../Huffman/Encoder";
+import HuffmanDecoder "../Huffman/Decoder";
 import BitReader "../BitReader";
+
+import { buffer_opt_last; send_err } "../utils";
 
 module {
     type BitBuffer = BitBuffer.BitBuffer;
@@ -56,8 +59,26 @@ module {
         },
     ];
 
-    let BITWIDTH_CODE_ORDER: [Nat] = [
-        16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15,
+    let BITWIDTH_CODE_ORDER : [Nat] = [
+        16,
+        17,
+        18,
+        0,
+        8,
+        7,
+        9,
+        6,
+        10,
+        5,
+        11,
+        4,
+        12,
+        3,
+        13,
+        2,
+        14,
+        1,
+        15,
     ];
 
     /// Encodes the literal and length Deflate Symbol to Nat16 and returns the extra bits
@@ -145,7 +166,7 @@ module {
         };
     };
 
-    public class Encoder(literal_encoder : Huffman.Encoder, distance_encoder : Huffman.Encoder) {
+    public class Encoder(literal_encoder : HuffmanEncoder.Encoder, distance_encoder : HuffmanEncoder.Encoder) {
 
         public func encode(bitbuffer : BitBuffer, symbol : Symbol) {
 
@@ -200,7 +221,7 @@ module {
         (258, 0),
     ];
 
-    let DISTANCE_TABLE: [(Nat, Nat)] = [
+    let DISTANCE_TABLE : [(Nat, Nat)] = [
         (1, 0),
         (2, 0),
         (3, 0),
@@ -233,8 +254,8 @@ module {
         (24_577, 13),
     ];
 
-    public class Decoder(literal_decoder : Huffman.Decoder, distance_decoder : Huffman.Decoder) {
-        public func decode(reader: BitReader) : Result<Symbol, Text> {
+    public class Decoder(literal_decoder : HuffmanDecoder.Decoder, distance_decoder : HuffmanDecoder.Decoder) {
+        public func decode(reader : BitReader) : Result<Symbol, Text> {
             let symbol_res = decode_literal(reader);
 
             let #ok(symbol) = symbol_res else return symbol_res;
@@ -242,10 +263,10 @@ module {
             let #pointer(_, length) = symbol else return #ok(symbol);
 
             let bwd_res = decode_distance(reader);
-            
-            let backward_distance = switch(bwd_res){
-                case(#ok(backward_distance)) backward_distance;
-                case(#err(msg)) return #err(msg);
+
+            let backward_distance = switch (bwd_res) {
+                case (#ok(backward_distance)) backward_distance;
+                case (#err(msg)) return #err(msg);
             };
 
             let back_ref = #pointer(backward_distance, length);
@@ -256,7 +277,7 @@ module {
         func decode_literal(reader : BitReader) : Result<Symbol, Text> {
             let res = literal_decoder.decode(reader);
 
-            let val = switch(res){
+            let val = switch (res) {
                 case (#ok(val)) val;
                 case (#err(msg)) return #err(msg);
             };
@@ -276,13 +297,13 @@ module {
                 #pointer(0, base + extra);
             };
 
-            #ok(symbol)
+            #ok(symbol);
         };
 
-        func decode_distance(reader: BitReader) : Result<Nat, Text> {
+        func decode_distance(reader : BitReader) : Result<Nat, Text> {
             let res = distance_decoder.decode(reader);
 
-            let val = switch(res){
+            let val = switch (res) {
                 case (#ok(val)) val;
                 case (#err(msg)) return #err(msg);
             };
@@ -290,8 +311,8 @@ module {
             let (base, extra_bits) = DISTANCE_TABLE[val];
             let distance = base + reader.readBits(extra_bits);
 
-            #ok(distance)
-        };  
+            #ok(distance);
+        };
     };
 
     public type HuffmanCodec = {
@@ -303,7 +324,7 @@ module {
     public class FixedHuffmanCodec() : HuffmanCodec {
 
         public func build(_ : Buffer<Symbol>) : Result<Encoder, Text> {
-            let literal_builder = Huffman.Builder(288);
+            let literal_builder = HuffmanEncoder.Builder(288);
 
             for (
                 {
@@ -320,19 +341,25 @@ module {
                         bits = base_code + Nat16.fromNat(symbol - symbol_start);
                     };
 
-                    literal_builder.set_mapping(symbol, code);
+                    switch (literal_builder.setMapping(symbol, code)) {
+                        case (#ok(_)) {};
+                        case (#err(msg)) return #err(if (msg.size() > 0) msg else "Failed to set mapping for symbol ");
+                    };
                 };
 
             };
 
             let literal_encoder = literal_builder.build();
 
-            let distance_builder = Huffman.Builder(30);
+            let distance_builder = HuffmanEncoder.Builder(30);
 
             for (symbol in Iter.range(0, 29)) {
                 let code = { bitwidth = 5; bits = Nat16.fromNat(symbol) };
 
-                distance_builder.set_mapping(symbol, code);
+                switch (distance_builder.setMapping(symbol, code)) {
+                    case (#ok(_)) {};
+                    case (#err(msg)) return #err(if (msg.size() > 0) msg else "Failed to set mapping for symbol ");
+                };
             };
 
             let distance_encoder = distance_builder.build();
@@ -343,14 +370,16 @@ module {
         public func save() {};
 
         public func load(reader : BitReader) : Result<Decoder, Text> {
-            let literal_decoder = Huffman.DecoderBuilder(9);
+            let literal_decoder = HuffmanDecoder.Builder(9);
 
-            for ({
-                bitwidth;
-                symbol_start;
-                symbol_end;
-                base_code;
-            } in FIXED_LENGTH_CODES.vals()) {
+            for (
+                {
+                    bitwidth;
+                    symbol_start;
+                    symbol_end;
+                    base_code;
+                } in FIXED_LENGTH_CODES.vals()
+            ) {
                 for (symbol in Iter.range(symbol_start, symbol_end)) {
                     let code = {
                         bitwidth;
@@ -358,27 +387,27 @@ module {
                     };
 
                     let res = literal_decoder.setMapping(symbol, code);
-                    switch(res){
-                        case(#ok(_)) ();
-                        case(#err(msg)) return #err(msg);
+                    switch (res) {
+                        case (#ok(_))();
+                        case (#err(msg)) return #err(msg);
                     };
                 };
             };
 
-            let distance_decoder = Huffman.DecoderBuilder(5);
+            let distance_decoder = HuffmanDecoder.Builder(5);
 
             for (symbol in Iter.range(0, 29)) {
                 let code = { bitwidth = 5; bits = Nat16.fromNat(symbol) };
 
                 let res = distance_decoder.setMapping(symbol, code);
-                    switch(res){
-                        case(#ok(_)) ();
-                        case(#err(msg)) return #err(msg);
-                    };
+                switch (res) {
+                    case (#ok(_))();
+                    case (#err(msg)) return #err(msg);
+                };
             };
 
             let symbol_decoder = Decoder(literal_decoder.build(), distance_decoder.build());
-            #ok(symbol_decoder)
+            #ok(symbol_decoder);
         };
     };
 
@@ -397,13 +426,13 @@ module {
                 };
             };
 
-            let literal_result = Huffman.fromFrequencies(Array.freeze(literal_freq), 15);
+            let literal_result = HuffmanEncoder.fromFrequencies(Array.freeze(literal_freq), 15);
             let literal_encoder = switch (literal_result) {
                 case (#ok(encoder)) encoder;
                 case (#err(err)) return #err(err);
             };
 
-            let distance_result = Huffman.fromFrequencies(Array.freeze(distance_freq), 15);
+            let distance_result = HuffmanEncoder.fromFrequencies(Array.freeze(distance_freq), 15);
             let distance_encoder = switch (distance_result) {
                 case (#ok(encoder)) encoder;
                 case (#err(err)) return #err(err);
@@ -413,32 +442,118 @@ module {
         };
 
         public func save() {
-            
+
         };
 
         let MAX_DISTANCE_CODE_COUNT = 30;
 
+        func loadBitwidths(reader : BitReader, bitwidths : Buffer<Nat>, code : Nat, last_opt : ?Nat) : Result<(), Text> {
+            let (item, cnt) = switch (code) {
+                case (16) {
+                    let cnt = reader.readBits(2) + 3;
+
+                    let last = switch (last_opt) {
+                        case (null) return #err("Invalid data: No previous value to repeat");
+                        case (?last_item) last_item;
+                    };
+
+                    (last, cnt);
+                };
+                case (17) {
+                    let zeroes = reader.readBits(3) + 3;
+                    (0, zeroes);
+                };
+                case (18) {
+                    let zeroes = reader.readBits(7) + 11;
+                    (0, zeroes);
+                };
+                case (_) {
+                    if (code >= 0 and code <= 15) {
+                        (code, 1);
+                    } else { return #err("Invalid code: " # debug_show (code)) };
+                };
+            };
+
+            for (_ in Iter.range(1, cnt)) {
+                bitwidths.add(item);
+            };
+
+            #ok();
+        };
+
         public func load(reader : BitReader) : Result<Decoder, Text> {
-            let literal_code_count = reader.readBits(5) + 257;
-            let distance_code_count = reader.readBits(5) + 1;
-            let bitwidth_code_count = reader.readBits(4) + 4;
+            let literal_code_count = reader.readBits(5) + 257; // HLIT
+            let distance_code_count = reader.readBits(5) + 1; // HDIST
+            let bitwidth_code_count = reader.readBits(4) + 4; // HCLEN
 
             if (distance_code_count > MAX_DISTANCE_CODE_COUNT) {
-                return #err("The value of HDIST is too big: max="# debug_show (MAX_DISTANCE_CODE_COUNT) # ", actual="# debug_show (distance_code_count));
+                return #err("The value of HDIST is too big: max=" # debug_show (MAX_DISTANCE_CODE_COUNT) # ", actual=" # debug_show (distance_code_count));
             };
 
-            let bitwidths = Array.init<Nat>(19, 0);
+            let _bitwidths = Array.init<Nat>(19, 0);
 
             for (i in Iter.range(1, bitwidth_code_count)) {
-                bitwidths[i - 1] := reader.readBits(3);
+                let index = BITWIDTH_CODE_ORDER[i - 1];
+                _bitwidths[index] := reader.readBits(3);
             };
 
-            let bitwidth_decoder = Huffman.DecoderBuilder(7);
+            let bitwidths = Array.freeze(_bitwidths);
 
-            
+            let bitwidth_decoder = switch(HuffmanDecoder.fromBitwidths(bitwidths) ) {
+                case (#ok(decoder)) decoder;
+                case (#err(msg)) return #err(msg);
+            };
 
+            let bitwidths_buffer = Buffer.Buffer<Nat>(literal_code_count);
 
-            #err("Dynamic Huffman codec cannot be saved or loaded");
+            var last_index = 0;
+            while (bitwidths_buffer.size() < literal_code_count) {
+                let code_res = bitwidth_decoder.decode(reader);
+                let #ok(code) = code_res else return send_err(code_res);
+                
+                let last = buffer_opt_last(bitwidths_buffer);
+                let res = loadBitwidths(reader, bitwidths_buffer, code, last);
+
+                switch (res) {
+                    case (#ok(_)) {};
+                    case (#err(msg)) return #err(msg);
+                };
+            };
+
+            let (literal_bitwidths, distance_bitwidths) = Buffer.split(bitwidths_buffer, literal_code_count);
+
+            while (distance_bitwidths.size() < distance_code_count) {
+
+                let code = switch(bitwidth_decoder.decode(reader)){
+                    case (#ok(code)) code;
+                    case (#err(msg)) return #err(msg);
+                };
+
+                let last = switch (buffer_opt_last(distance_bitwidths)) {
+                    case (null) literal_bitwidths.getOpt(literal_bitwidths.size() - 1);
+                    case (item) item;
+                };
+
+                switch (loadBitwidths(reader, distance_bitwidths, code, last)) {
+                    case (#ok(_)) {};
+                    case (#err(msg)) return #err(msg);
+                };
+            };
+
+            if (distance_bitwidths.size() > distance_code_count) {
+                return #err("The distance code bitwidths are too large: expected=" # debug_show (distance_code_count) # ", actual=" # debug_show (distance_bitwidths.size()));
+            };
+
+            let literal_bitwidths_arr = Buffer.toArray(literal_bitwidths);
+            let literal_decoder_res = HuffmanDecoder.fromBitwidths(literal_bitwidths_arr);
+            let #ok(literal_decoder) = literal_decoder_res else return send_err(literal_decoder_res);
+
+            let distance_bitwidths_arr = Buffer.toArray(distance_bitwidths);
+            let distance_decoder_res = HuffmanDecoder.fromBitwidths(distance_bitwidths_arr);
+            let #ok(distance_decoder) = distance_decoder_res else return send_err(distance_decoder_res);
+
+            #ok(Decoder(literal_decoder, distance_decoder))
+
         };
     };
 };

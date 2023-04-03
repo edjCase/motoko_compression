@@ -17,7 +17,11 @@ docs:
 	$(shell vessel bin)/mo-doc --format plain
 
 gz-stat: 
-	python3 ./gzstat/gzstat.py --print-block-codes --decode-blocks < output.gz > output.stat
+	python3 ../gzstat/gzstat.py --print-block-codes --decode-blocks < output.gz > output.stat
+
+gz:
+	gzip --no-name -c output > output.gz
+	node blob-to-gz -rev
 
 gz-d:
 	node blob-to-gz $(param)

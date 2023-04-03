@@ -73,10 +73,10 @@ let success = run([
 
                     gzip_encoder.encode(bytes);
                     let output = gzip_encoder.finish();
-
                     Debug.print("Example: " # debug_show (Example.text.size()) # " -> " # debug_show output.size() # " bytes");
+
                     assertTrue( 
-                        Blob.toArray(output) == Example.compressed    
+                        output == Example.fixed_code_compression    
                     );
                 })
             ]),

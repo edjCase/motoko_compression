@@ -1,1379 +1,301 @@
 -- gzip member 0 --
     Compression Method: 8 (deflate)
     Flags: 0x00
-    Modification time: 0x0000000c (Wed Dec 31 19:00:12 1969)
+    Modification time: 0x00000000 (Wed Dec 31 19:00:00 1969)
     Extra flags: 0x00
     OS Type: 3
-    -- Block 0 (last = 0) --
-        Block type: 1 (fixed codes)
-        Decoding Block Type 01 (fixed codes):
+    -- Block 0 (last = 1) --
+        Block type: 2 (dynamic codes)
+        Decoding Block Type 10 (dynamic codes):
+            Number of LL codes: 270 (HLIT = 13)
+            Number of dist codes: 15 (HDIST = 14)
+            Number of code length (CL) codes: 16 (HCLEN = 12)
+            CL code lengths (0 - 18): 2 0 5 4 3 3 3 3 0 0 0 0 0 0 0 0 0 3 5
+            CL codes:
+                0: 00
+                2: 11110
+                3: 1110
+                4: 010
+                5: 011
+                6: 100
+                7: 101
+                17: 110
+                18: 11111
+            Symbol 17 (repeat count 10)
+            Symbol 18 (repeat count 21)
+            Symbol 17 (repeat count 9)
+            Symbol 18 (repeat count 19)
+            Symbol 17 (repeat count 6)
+            Symbol 17 (repeat count 5)
+            Symbol 18 (repeat count 14)
+            Symbol 18 (repeat count 134)
+            Symbol 17 (repeat count 3)
+            Symbol 17 (repeat count 5)
+            LL codes:
+                10: 1110100
+                32: 0000
+                34: 1110101
+                44: 110000
+                46: 110001
+                66: 1110110
+                73: 1110111
+                76: 1111000
+                82: 1111001
+                97: 10000
+                98: 1111010
+                99: 110010
+                100: 10001
+                101: 0001
+                102: 110011
+                104: 110100
+                105: 0010
+                106: 1111011
+                107: 110101
+                108: 10010
+                110: 0011
+                111: 0100
+                112: 10011
+                114: 0101
+                115: 0110
+                116: 0111
+                117: 10100
+                118: 1111100
+                119: 10101
+                121: 10110
+                256: 1111101
+                257: 110110
+                258: 10111
+                259: 1111110
+                261: 110111
+                262: 111000
+                266: 111001
+                269: 1111111
+            dist codes:
+                5: 010
+                6: 1110
+                8: 011
+                10: 00
+                11: 1111
+                12: 100
+                13: 101
+                14: 110
             -- Decoded data --
-            01011010: 0x2a (*)
-            01011010: 0x2a (*)
-            10000100: 0x54 (T)
-            10011000: 0x68 (h)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10000000: 0x50 (P)
-            10100010: 0x72 (r)
-            10011111: 0x6f (o)
-            10011010: 0x6a (j)
-            10010101: 0x65 (e)
-            10010011: 0x63 (c)
-            10100100: 0x74 (t)
-            01010000: 0x20
-            01110111: 0x47 (G)
-            10100101: 0x75 (u)
-            10100100: 0x74 (t)
-            10010101: 0x65 (e)
-            10011110: 0x6e (n)
-            10010010: 0x62 (b)
-            10010101: 0x65 (e)
-            10100010: 0x72 (r)
-            10010111: 0x67 (g)
-            01010000: 0x20
-            01110101: 0x45 (E)
-            10100100: 0x74 (t)
-            10010101: 0x65 (e)
-            10101000: 0x78 (x)
-            10100100: 0x74 (t)
-            01010000: 0x20
-            10011111: 0x6f (o)
-            10010110: 0x66 (f)
-            01010000: 0x20
-            01110001: 0x41 (A)
-            01010000: 0x20
-            01110011: 0x43 (C)
-            10011000: 0x68 (h)
-            10011001: 0x69 (i)
-            10011100: 0x6c (l)
-            10010100: 0x64 (d)
-            01010111: 0x27 (')
-            10100011: 0x73 (s)
-            01010000: 0x20
-            01111000: 0x48 (H)
-            10011001: 0x69 (i)
-            10100011: 0x73 (s)
-            10100100: 0x74 (t)
-            10011111: 0x6f (o)
-            10100010: 0x72 (r)
-            10101001: 0x79 (y)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01000: 8
-                3 extra distance bits: Offset 4. Total distance 21
-            01110101: 0x45 (E)
-            10011110: 0x6e (n)
-            10010111: 0x67 (g)
-            10011100: 0x6c (l)
-            10010001: 0x61 (a)
-            10011110: 0x6e (n)
-            10010100: 0x64 (d)
-            01011010: 0x2a (*)
-            01011010: 0x2a (*)
-            00111010: 0x0a
-            01010011: 0x23 (#)
-            01100001: 0x31 (1)
-            01100001: 0x31 (1)
-            01010000: 0x20
-            10011001: 0x69 (i)
-            10011110: 0x6e (n)
-            01010000: 0x20
-            10011111: 0x6f (o)
-            10100101: 0x75 (u)
-            10100010: 0x72 (r)
-            01010000: 0x20
-            10100011: 0x73 (s)
-            10010101: 0x65 (e)
-            10100010: 0x72 (r)
-            10011001: 0x69 (i)
-            10010101: 0x65 (e)
-            10100011: 0x73 (s)
-            01010000: 0x20
-            10010010: 0x62 (b)
-            10101001: 0x79 (y)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01011: 11
-                4 extra distance bits: Offset 1. Total distance 50
-            10010001: 0x61 (a)
-            10100010: 0x72 (r)
-            10011100: 0x6c (l)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00110: 6
-                2 extra distance bits: Offset 2. Total distance 11
-            01110100: 0x44 (D)
-            10011001: 0x69 (i)
-            10010011: 0x63 (c)
-            10011011: 0x6b (k)
-            10010101: 0x65 (e)
-            10011110: 0x6e (n)
-            10100011: 0x73 (s)
-            00111010: 0x0a
-            00111010: 0x0a
-            00111010: 0x0a
-            01110011: 0x43 (C)
-            10011111: 0x6f (o)
-            10100000: 0x70 (p)
-            10101001: 0x79 (y)
-            10100010: 0x72 (r)
-            10011001: 0x69 (i)
-            10010111: 0x67 (g)
-            10011000: 0x68 (h)
-            10100100: 0x74 (t)
-            01010000: 0x20
-            10011100: 0x6c (l)
-            10010001: 0x61 (a)
-            10100111: 0x77 (w)
-            10100011: 0x73 (s)
-            01010000: 0x20
-            10010001: 0x61 (a)
-            10100010: 0x72 (r)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10010011: 0x63 (c)
-            10011000: 0x68 (h)
-            10010001: 0x61 (a)
-            10011110: 0x6e (n)
-            10010111: 0x67 (g)
-            10011001: 0x69 (i)
-            10011110: 0x6e (n)
-            10010111: 0x67 (g)
-            01010000: 0x20
-            10010001: 0x61 (a)
-            10011100: 0x6c (l)
-            10011100: 0x6c (l)
-            01010000: 0x20
-            10011111: 0x6f (o)
-            10100110: 0x76 (v)
-            10010101: 0x65 (e)
-            10100010: 0x72 (r)
-            01010000: 0x20
-            10100100: 0x74 (t)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 9. Total distance 138
-            10100111: 0x77 (w)
-            10011111: 0x6f (o)
-            10100010: 0x72 (r)
-            10011100: 0x6c (l)
-            10010100: 0x64 (d)
-            01011100: 0x2c (,)
-            01010000: 0x20
-            10010010: 0x62 (b)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10100011: 0x73 (s)
-            10100101: 0x75 (u)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01010: 10
-                4 extra distance bits: Offset 4. Total distance 37
-            10100100: 0x74 (t)
-            10011111: 0x6f (o)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01010: 10
-                4 extra distance bits: Offset 7. Total distance 40
-            10010101: 0x65 (e)
-            10010011: 0x63 (c)
-            10011011: 0x6b (k)
-            00111010: 0x0a
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01001: 9
-                3 extra distance bits: Offset 3. Total distance 28
-            10010011: 0x63 (c)
-            0001010: 0x10a
-                0x10a is Length code 266
-                1 extra length bits: Offset 1. Total length 14
-                Distance code 01100: 12
-                5 extra distance bits: Offset 4. Total distance 69
-            10010110: 0x66 (f)
-            10011111: 0x6f (o)
-            10100010: 0x72 (r)
-            01010000: 0x20
-            10101001: 0x79 (y)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01101: 13
-                5 extra distance bits: Offset 24. Total distance 121
-            10010011: 0x63 (c)
-            10011111: 0x6f (o)
-            10100101: 0x75 (u)
-            10011110: 0x6e (n)
-            10100100: 0x74 (t)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 24. Total distance 153
-            10010010: 0x62 (b)
-            10010101: 0x65 (e)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01000: 8
-                3 extra distance bits: Offset 2. Total distance 19
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10100000: 0x70 (p)
-            10011111: 0x6f (o)
-            10100011: 0x73 (s)
-            10100100: 0x74 (t)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01100: 12
-                5 extra distance bits: Offset 23. Total distance 88
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01011: 11
-                4 extra distance bits: Offset 2. Total distance 51
-            10100011: 0x73 (s)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10010110: 0x66 (f)
-            10011001: 0x69 (i)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 9. Total distance 138
-            01010001: 0x21 (!)
-            01010001: 0x21 (!)
-            00111010: 0x0a
-            00111010: 0x0a
-            10000000: 0x50 (P)
-            10011100: 0x6c (l)
-            10010101: 0x65 (e)
-            10010001: 0x61 (a)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00111: 7
-                2 extra distance bits: Offset 3. Total distance 16
-            10100100: 0x74 (t)
-            10010001: 0x61 (a)
-            10011011: 0x6b (k)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10010001: 0x61 (a)
-            01010000: 0x20
-            10011100: 0x6c (l)
-            10011111: 0x6f (o)
-            10011111: 0x6f (o)
-            10011011: 0x6b (k)
-            01010000: 0x20
-            10010001: 0x61 (a)
-            10100100: 0x74 (t)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01010: 10
-                4 extra distance bits: Offset 4. Total distance 37
-            01010000: 0x20
-            10011001: 0x69 (i)
-            10011101: 0x6d (m)
-            10100000: 0x70 (p)
-            10011111: 0x6f (o)
-            10100010: 0x72 (r)
-            10100100: 0x74 (t)
-            10010001: 0x61 (a)
-            10011110: 0x6e (n)
-            10100100: 0x74 (t)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01111: 15
-                6 extra distance bits: Offset 9. Total distance 202
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 1. Total distance 66
-            10011101: 0x6d (m)
-            10010001: 0x61 (a)
-            10100100: 0x74 (t)
-            10011001: 0x69 (i)
-            10011111: 0x6f (o)
-            10011110: 0x6e (n)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00110: 6
-                2 extra distance bits: Offset 3. Total distance 12
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01001: 9
-                3 extra distance bits: Offset 4. Total distance 29
-            10011001: 0x69 (i)
-            10100011: 0x73 (s)
-            01010000: 0x20
-            10011000: 0x68 (h)
-            10010101: 0x65 (e)
-            10010001: 0x61 (a)
-            10010100: 0x64 (d)
-            10010101: 0x65 (e)
-            10100010: 0x72 (r)
-            01011110: 0x2e (.)
-            00111010: 0x0a
-            10000111: 0x57 (W)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10010101: 0x65 (e)
-            10011110: 0x6e (n)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01101: 13
-                5 extra distance bits: Offset 10. Total distance 107
-            10100010: 0x72 (r)
-            10010001: 0x61 (a)
-            10010111: 0x67 (g)
-            10010101: 0x65 (e)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01101: 13
-                5 extra distance bits: Offset 23. Total distance 120
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01110: 14
-                6 extra distance bits: Offset 27. Total distance 156
-            10011011: 0x6b (k)
-            10010101: 0x65 (e)
-            10010101: 0x65 (e)
-            10100000: 0x70 (p)
-            0000100: 0x104
-                0x104 is Length code 260
-                0 extra length bits: Offset 0. Total length 6
-                Distance code 01010: 10
-                4 extra distance bits: Offset 5. Total distance 38
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01101: 13
-                5 extra distance bits: Offset 6. Total distance 103
-            01010000: 0x20
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01011: 11
-                4 extra distance bits: Offset 5. Total distance 54
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01001: 9
-                3 extra distance bits: Offset 0. Total distance 25
-            10100010: 0x72 (r)
-            01010000: 0x20
-            10011111: 0x6f (o)
-            10100111: 0x77 (w)
-            10011110: 0x6e (n)
-            01010000: 0x20
-            10010100: 0x64 (d)
-            10011001: 0x69 (i)
-            10100011: 0x73 (s)
-            10011011: 0x6b (k)
-            01011100: 0x2c (,)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01010: 10
-                4 extra distance bits: Offset 0. Total distance 33
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01110: 14
-                6 extra distance bits: Offset 11. Total distance 140
-            10010001: 0x61 (a)
-            10011110: 0x6e (n)
-            00111010: 0x0a
-            10010101: 0x65 (e)
-            10011100: 0x6c (l)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 97. Total distance 354
-            10100010: 0x72 (r)
-            10011111: 0x6f (o)
-            10011110: 0x6e (n)
-            10011001: 0x69 (i)
-            10010011: 0x63 (c)
-            01010000: 0x20
-            10100000: 0x70 (p)
-            10010001: 0x61 (a)
-            10100100: 0x74 (t)
-            10011000: 0x68 (h)
-            01010000: 0x20
-            10011111: 0x6f (o)
-            10100000: 0x70 (p)
-            10010101: 0x65 (e)
-            10011110: 0x6e (n)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01111: 15
-                6 extra distance bits: Offset 3. Total distance 196
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01110: 14
-                6 extra distance bits: Offset 2. Total distance 131
-            10011110: 0x6e (n)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10000: 16
-                7 extra distance bits: Offset 109. Total distance 366
-            10100010: 0x72 (r)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01101: 13
-                5 extra distance bits: Offset 9. Total distance 106
-            10100011: 0x73 (s)
-            01011110: 0x2e (.)
-            01010000: 0x20
-            01010000: 0x20
-            01110100: 0x44 (D)
-            10011111: 0x6f (o)
-            01010000: 0x20
-            10011110: 0x6e (n)
-            10011111: 0x6f (o)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01000: 8
-                3 extra distance bits: Offset 0. Total distance 17
-            10011101: 0x6d (m)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 24. Total distance 281
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01010: 10
-                4 extra distance bits: Offset 0. Total distance 33
-            10011001: 0x69 (i)
-            10100011: 0x73 (s)
-            01011110: 0x2e (.)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 68. Total distance 325
-            01011010: 0x2a (*)
-            01011010: 0x2a (*)
-            10000111: 0x57 (W)
-            10010101: 0x65 (e)
-            10011100: 0x6c (l)
-            10010011: 0x63 (c)
-            10011111: 0x6f (o)
-            10011101: 0x6d (m)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10000100: 0x54 (T)
-            10011111: 0x6f (o)
-            01010000: 0x20
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10001: 17
-                7 extra distance bits: Offset 54. Total distance 439
-            10000111: 0x57 (W)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10000: 16
-                7 extra distance bits: Offset 44. Total distance 301
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10001: 17
-                7 extra distance bits: Offset 15. Total distance 400
-            01110110: 0x46 (F)
-            10100010: 0x72 (r)
-            10010101: 0x65 (e)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 68. Total distance 453
-            10011100: 0x6c (l)
-            10010001: 0x61 (a)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 51. Total distance 180
-            10000110: 0x56 (V)
-            10010001: 0x61 (a)
-            10011110: 0x6e (n)
-            10011001: 0x69 (i)
-            10011100: 0x6c (l)
-            10011100: 0x6c (l)
-            10010001: 0x61 (a)
-            01010000: 0x20
-            01110101: 0x45 (E)
-            0001000: 0x108
-                0x108 is Length code 264
-                0 extra length bits: Offset 0. Total length 10
-                Distance code 01101: 13
-                5 extra distance bits: Offset 14. Total distance 111
-            10000100: 0x54 (T)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 28. Total distance 93
-            10100011: 0x73 (s)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 43. Total distance 428
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 0. Total distance 65
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 10001: 17
-                7 extra distance bits: Offset 86. Total distance 471
-            10100011: 0x73 (s)
-            01010000: 0x20
-            10000010: 0x52 (R)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01101: 13
-                5 extra distance bits: Offset 9. Total distance 106
-            10010001: 0x61 (a)
-            10010010: 0x62 (b)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 49. Total distance 178
-            01110010: 0x42 (B)
-            10101001: 0x79 (y)
-            01010000: 0x20
-            01110010: 0x42 (B)
-            10011111: 0x6f (o)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 12. Total distance 141
-            01111000: 0x48 (H)
-            10100101: 0x75 (u)
-            10011101: 0x6d (m)
-            10010001: 0x61 (a)
-            10011110: 0x6e (n)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 23. Total distance 408
-            10011110: 0x6e (n)
-            10010100: 0x64 (d)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01000: 8
-                3 extra distance bits: Offset 2. Total distance 19
-            01110011: 0x43 (C)
-            10011111: 0x6f (o)
-            10011101: 0x6d (m)
-            10100000: 0x70 (p)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 9. Total distance 522
-            10100010: 0x72 (r)
-            10100011: 0x73 (s)
-            01011100: 0x2c (,)
-            01010000: 0x20
-            10000011: 0x53 (S)
-            10011001: 0x69 (i)
-            10011110: 0x6e (n)
-            10010011: 0x63 (c)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            01100001: 0x31 (1)
-            01101001: 0x39 (9)
-            01100111: 0x37 (7)
-            01100001: 0x31 (1)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01100: 12
-                5 extra distance bits: Offset 0. Total distance 65
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01101: 13
-                5 extra distance bits: Offset 21. Total distance 118
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 67. Total distance 324
-            0000101: 0x105
+            1110110: 0x42 (B)
+            0100: 0x6f (o)
+            0011: 0x6e (n)
+            1111011: 0x6a (j)
+            0100: 0x6f (o)
+            10100: 0x75 (u)
+            0101: 0x72 (r)
+            1110100: 0x0a
+            1111000: 0x4c (L)
+            0010: 0x69 (i)
+            0111: 0x74 (t)
+            0001: 0x65 (e)
+            0101: 0x72 (r)
+            10000: 0x61 (a)
+            0111: 0x74 (t)
+            10100: 0x75 (u)
+            0101: 0x72 (r)
+            0001: 0x65 (e)
+            0000: 0x20
+            0010: 0x69 (i)
+            0110: 0x73 (s)
+            0000: 0x20
+            110011: 0x66 (f)
+            10100: 0x75 (u)
+            10010: 0x6c (l)
+            10010: 0x6c (l)
+            0000: 0x20
+            0100: 0x6f (o)
+            110011: 0x66 (f)
+            0000: 0x20
+            0101: 0x72 (r)
+            0001: 0x65 (e)
+            10011: 0x70 (p)
+            0001: 0x65 (e)
+            0111: 0x74 (t)
+            0010: 0x69 (i)
+            0111: 0x74 (t)
+            0010: 0x69 (i)
+            0100: 0x6f (o)
+            0011: 0x6e (n)
+            110001: 0x2e (.)
+            0000: 0x20
+            110111: 0x105
                 0x105 is Length code 261
                 0 extra length bits: Offset 0. Total length 7
-                Distance code 01100: 12
-                5 extra distance bits: Offset 5. Total distance 70
-            10000000: 0x50 (P)
-            10100010: 0x72 (r)
-            10010101: 0x65 (e)
-            10100000: 0x70 (p)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 73. Total distance 458
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01011: 11
-                4 extra distance bits: Offset 2. Total distance 51
-            01111000: 0x48 (H)
-            10100101: 0x75 (u)
-            10011110: 0x6e (n)
-            10010100: 0x64 (d)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00110: 6
-                2 extra distance bits: Offset 2. Total distance 11
-            10100011: 0x73 (s)
-            0000010: 0x102
+                Distance code 00: 10
+                4 extra distance bits: Offset 2. Total distance 35
+            0101: 0x72 (r)
+            10110: 0x79 (y)
+            0000: 0x20
+            10101: 0x77 (w)
+            0101: 0x72 (r)
+            10111: 0x102
                 0x102 is Length code 258
                 0 extra length bits: Offset 0. Total length 4
-                Distance code 01110: 14
-                6 extra distance bits: Offset 13. Total distance 142
-            10000110: 0x56 (V)
-            10011111: 0x6f (o)
-            10011100: 0x6c (l)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 16. Total distance 401
-            10010101: 0x65 (e)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01011: 11
-                4 extra distance bits: Offset 15. Total distance 64
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01100: 12
-                5 extra distance bits: Offset 16. Total distance 81
-            01110100: 0x44 (D)
-            10011111: 0x6f (o)
-            10011110: 0x6e (n)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 10000: 16
-                7 extra distance bits: Offset 81. Total distance 338
-            10100011: 0x73 (s)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 0. Total distance 65
-            01111001: 0x49 (I)
-            0001001: 0x109
-                0x109 is Length code 265
-                1 extra length bits: Offset 0. Total length 11
-                Distance code 10000: 16
-                7 extra distance bits: Offset 96. Total distance 353
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00010: 2
-                0 extra distance bits: Offset 0. Total distance 3
-            10010011: 0x63 (c)
-            10011111: 0x6f (o)
-            10011110: 0x6e (n)
-            10100100: 0x74 (t)
-            10010001: 0x61 (a)
-            10010011: 0x63 (c)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 10001: 17
-                7 extra distance bits: Offset 45. Total distance 430
-            0001100: 0x10c
-                0x10c is Length code 268
-                1 extra length bits: Offset 1. Total length 18
-                Distance code 10010: 18
-                8 extra distance bits: Offset 130. Total distance 643
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 95. Total distance 352
-            10010111: 0x67 (g)
-            10010101: 0x65 (e)
-            10100100: 0x74 (t)
-            0000101: 0x105
-                0x105 is Length code 261
-                0 extra length bits: Offset 0. Total length 7
-                Distance code 01101: 13
-                5 extra distance bits: Offset 12. Total distance 109
-            01011100: 0x2c (,)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01100: 12
-                5 extra distance bits: Offset 10. Total distance 75
-            00111010: 0x0a
-            10010110: 0x66 (f)
-            10100101: 0x75 (u)
-            10100010: 0x72 (r)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 45. Total distance 302
-            10100010: 0x72 (r)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 27. Total distance 412
-            0001000: 0x108
-                0x108 is Length code 264
-                0 extra length bits: Offset 0. Total length 10
-                Distance code 01100: 12
-                5 extra distance bits: Offset 6. Total distance 71
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 124. Total distance 381
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 35. Total distance 164
-            10011100: 0x6c (l)
-            10100101: 0x75 (u)
-            10010100: 0x64 (d)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 8. Total distance 137
-            10010010: 0x62 (b)
-            10010101: 0x65 (e)
-            10011100: 0x6c (l)
-            10011111: 0x6f (o)
-            10100111: 0x77 (w)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 63. Total distance 320
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 43. Total distance 428
-            10011110: 0x6e (n)
-            10010101: 0x65 (e)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00111: 7
-                2 extra distance bits: Offset 3. Total distance 16
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 10001: 17
-                7 extra distance bits: Offset 13. Total distance 398
-            10010100: 0x64 (d)
-            0000110: 0x106
+                Distance code 1110: 6
+                2 extra distance bits: Offset 1. Total distance 10
+            0110: 0x73 (s)
+            0000: 0x20
+            110010: 0x63 (c)
+            0100: 0x6f (o)
+            0011: 0x6e (n)
+            0110: 0x73 (s)
+            0111: 0x74 (t)
+            10000: 0x61 (a)
+            0011: 0x6e (n)
+            0111: 0x74 (t)
+            10010: 0x6c (l)
+            10110: 0x79 (y)
+            0000: 0x20
+            10100: 0x75 (u)
+            0110: 0x73 (s)
+            0001: 0x65 (e)
+            0000: 0x20
+            0111: 0x74 (t)
+            110100: 0x68 (h)
+            0001: 0x65 (e)
+            0000: 0x20
+            10010: 0x6c (l)
+            111000: 0x106
                 0x106 is Length code 262
                 0 extra length bits: Offset 0. Total length 8
-                Distance code 01101: 13
-                5 extra distance bits: Offset 31. Total distance 128
-            0000010: 0x102
+                Distance code 00: 10
+                4 extra distance bits: Offset 3. Total distance 36
+            10001: 0x64 (d)
+            0001: 0x65 (e)
+            1111100: 0x76 (v)
+            0010: 0x69 (i)
+            110010: 0x63 (c)
+            0001: 0x65 (e)
+            111000: 0x106
+                0x106 is Length code 262
+                0 extra length bits: Offset 0. Total length 8
+                Distance code 100: 12
+                5 extra distance bits: Offset 3. Total distance 68
+            10000: 0x61 (a)
+            0111: 0x74 (t)
+            0001: 0x65 (e)
+            10001: 0x64 (d)
+            0000: 0x20
+            10101: 0x77 (w)
+            0100: 0x6f (o)
+            0101: 0x72 (r)
+            10001: 0x64 (d)
+            0110: 0x73 (s)
+            110110: 0x101
+                0x101 is Length code 257
+                0 extra length bits: Offset 0. Total length 3
+                Distance code 100: 12
+                5 extra distance bits: Offset 7. Total distance 72
+            1110111: 0x49 (I)
+            110110: 0x101
+                0x101 is Length code 257
+                0 extra length bits: Offset 0. Total length 3
+                Distance code 00: 10
+                4 extra distance bits: Offset 9. Total distance 42
+            0010: 0x69 (i)
+            0011: 0x6e (n)
+            110101: 0x6b (k)
+            1111110: 0x103
+                0x103 is Length code 259
+                0 extra length bits: Offset 0. Total length 5
+                Distance code 00: 10
+                4 extra distance bits: Offset 15. Total distance 48
+            0100: 0x6f (o)
+            0011: 0x6e (n)
+            110110: 0x101
+                0x101 is Length code 257
+                0 extra length bits: Offset 0. Total length 3
+                Distance code 1111: 11
+                4 extra distance bits: Offset 12. Total distance 61
+            0111: 0x74 (t)
+            10110: 0x79 (y)
+            10011: 0x70 (p)
+            0001: 0x65 (e)
+            111001: 0x10a
+                0x10a is Length code 266
+                1 extra length bits: Offset 1. Total length 14
+                Distance code 101: 13
+                5 extra distance bits: Offset 13. Total distance 110
+            0000: 0x20
+            10101: 0x77 (w)
+            110100: 0x68 (h)
+            0010: 0x69 (i)
+            110010: 0x63 (c)
+            110100: 0x68 (h)
+            10111: 0x102
                 0x102 is Length code 258
                 0 extra length bits: Offset 0. Total length 4
-                Distance code 10000: 16
-                7 extra distance bits: Offset 67. Total distance 324
-            0001111: 0x10f
-                0x10f is Length code 271
-                2 extra length bits: Offset 1. Total length 28
-                Distance code 10010: 18
-                8 extra distance bits: Offset 206. Total distance 719
-            00111010: 0x0a
-            00111010: 0x0a
-            0001101: 0x10d
+                Distance code 110: 14
+                6 extra distance bits: Offset 9. Total distance 138
+            1111010: 0x62 (b)
+            10000: 0x61 (a)
+            10001: 0x64 (d)
+            10111: 0x102
+                0x102 is Length code 258
+                0 extra length bits: Offset 0. Total length 4
+                Distance code 010: 5
+                1 extra distance bits: Offset 0. Total distance 7
+            0110: 0x73 (s)
+            10010: 0x6c (l)
+            0100: 0x6f (o)
+            10011: 0x70 (p)
+            10011: 0x70 (p)
+            10110: 0x79 (y)
+            111001: 0x10a
+                0x10a is Length code 266
+                1 extra length bits: Offset 0. Total length 13
+                Distance code 110: 14
+                6 extra distance bits: Offset 15. Total distance 144
+            1111001: 0x52 (R)
+            1111111: 0x10d
                 0x10d is Length code 269
-                2 extra length bits: Offset 1. Total length 20
-                Distance code 10010: 18
-                8 extra distance bits: Offset 187. Total distance 700
-            01111111: 0x4f (O)
-            10010011: 0x63 (c)
-            10100100: 0x74 (t)
-            10011111: 0x6f (o)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 15. Total distance 144
-            01011100: 0x2c (,)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 4. Total distance 261
-            01101001: 0x39 (9)
-            01100110: 0x36 (6)
-            01010000: 0x20
-            01010000: 0x20
-            10001011: 0x5b ([)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01110: 14
-                6 extra distance bits: Offset 15. Total distance 144
-            01010000: 0x20
-            01010011: 0x23 (#)
-            01100110: 0x36 (6)
-            01101001: 0x39 (9)
-            01101001: 0x39 (9)
-            10001101: 0x5d (])
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 15. Total distance 80
-            0010100: 0x114
-                0x114 is Length code 276
-                3 extra length bits: Offset 5. Total length 64
-                Distance code 10011: 19
-                8 extra distance bits: Offset 63. Total distance 832
-            01011010: 0x2a (*)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00000: 0
-                0 extra distance bits: Offset 0. Total distance 1
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 2. Total distance 67
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01111: 15
-                6 extra distance bits: Offset 4. Total distance 197
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 10010: 18
-                8 extra distance bits: Offset 65. Total distance 578
-            10100011: 0x73 (s)
-            10011000: 0x68 (h)
-            10011111: 0x6f (o)
-            10100101: 0x75 (u)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 82. Total distance 467
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 254. Total distance 767
-            10011110: 0x6e (n)
-            10010001: 0x61 (a)
-            10011101: 0x6d (m)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01111: 15
-                6 extra distance bits: Offset 0. Total distance 193
-            10010001: 0x61 (a)
-            10010011: 0x63 (c)
-            10011000: 0x68 (h)
-            10011111: 0x6f (o)
-            10010101: 0x65 (e)
-            01100001: 0x31 (1)
-            01100000: 0x30 (0)
-            01011110: 0x2e (.)
-            10100100: 0x74 (t)
-            0000010: 0x102
+                2 extra length bits: Offset 0. Total length 19
+                Distance code 00: 10
+                4 extra distance bits: Offset 13. Total distance 46
+            10100: 0x75 (u)
+            0011: 0x6e (n)
+            0010: 0x69 (i)
+            0011: 0x6e (n)
+            0111: 0x74 (t)
+            0001: 0x65 (e)
+            0011: 0x6e (n)
+            10111: 0x102
                 0x102 is Length code 258
                 0 extra length bits: Offset 0. Total length 4
-                Distance code 01100: 12
-                5 extra distance bits: Offset 12. Total distance 77
-            10100010: 0x72 (r)
-            0000111: 0x107
-                0x107 is Length code 263
-                0 extra length bits: Offset 0. Total length 9
-                Distance code 00111: 7
-                2 extra distance bits: Offset 2. Total distance 15
-            10101010: 0x7a (z)
-            10011001: 0x69 (i)
-            10100000: 0x70 (p)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01011: 11
-                4 extra distance bits: Offset 6. Total distance 55
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00000: 0
-                0 extra distance bits: Offset 0. Total distance 1
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10011: 19
-                8 extra distance bits: Offset 89. Total distance 858
-            10100010: 0x72 (r)
-            10100010: 0x72 (r)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01101: 13
-                5 extra distance bits: Offset 26. Total distance 123
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01010: 10
-                4 extra distance bits: Offset 11. Total distance 44
-            01110101: 0x45 (E)
-            01110100: 0x44 (D)
-            01111001: 0x49 (I)
-            10000100: 0x54 (T)
-            01111001: 0x49 (I)
-            01111111: 0x4f (O)
-            01111110: 0x4e (N)
-            10000011: 0x53 (S)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01101: 13
-                5 extra distance bits: Offset 0. Total distance 97
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01111: 15
-                6 extra distance bits: Offset 55. Total distance 248
-            10010101: 0x65 (e)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01110: 14
-                6 extra distance bits: Offset 2. Total distance 131
-            10100011: 0x73 (s)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 10000: 16
-                7 extra distance bits: Offset 67. Total distance 324
-            10010001: 0x61 (a)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 14. Total distance 271
-            10100111: 0x77 (w)
-            01010000: 0x20
-            01111110: 0x4e (N)
-            10000101: 0x55 (U)
-            01111101: 0x4d (M)
-            01110010: 0x42 (B)
-            01110101: 0x45 (E)
-            10000010: 0x52 (R)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 73. Total distance 330
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01100: 12
-                5 extra distance bits: Offset 5. Total distance 70
-            01100001: 0x31 (1)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01100: 12
-                5 extra distance bits: Offset 20. Total distance 85
-            01011110: 0x2e (.)
-            00111010: 0x0a
-            10000110: 0x56 (V)
-            01110101: 0x45 (E)
-            10000010: 0x52 (R)
-            10000011: 0x53 (S)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 01011: 11
-                4 extra distance bits: Offset 5. Total distance 54
-            10010010: 0x62 (b)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10011: 19
-                8 extra distance bits: Offset 29. Total distance 798
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 76. Total distance 589
-            10011110: 0x6e (n)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10011: 19
-                8 extra distance bits: Offset 199. Total distance 968
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 85. Total distance 470
-            10010001: 0x61 (a)
-            10100100: 0x74 (t)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 12. Total distance 141
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 5. Total distance 70
-            10010011: 0x63 (c)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 10. Total distance 267
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01100: 12
-                5 extra distance bits: Offset 1. Total distance 66
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01011: 11
-                4 extra distance bits: Offset 15. Total distance 64
-            01111100: 0x4c (L)
-            01110101: 0x45 (E)
-            10000100: 0x54 (T)
-            10000100: 0x54 (T)
-            0001000: 0x108
-                0x108 is Length code 264
-                0 extra length bits: Offset 0. Total length 10
-                Distance code 01011: 11
-                4 extra distance bits: Offset 15. Total distance 64
-            01100000: 0x30 (0)
-            10010001: 0x61 (a)
-            0000100: 0x104
-                0x104 is Length code 260
-                0 extra length bits: Offset 0. Total length 6
-                Distance code 01100: 12
-                5 extra distance bits: Offset 0. Total distance 65
-            00111010: 0x0a
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10011: 19
-                8 extra distance bits: Offset 25. Total distance 794
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 6. Total distance 519
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 177. Total distance 690
-            10100111: 0x77 (w)
-            01010000: 0x20
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10011: 19
-                8 extra distance bits: Offset 134. Total distance 903
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10001: 17
-                7 extra distance bits: Offset 76. Total distance 461
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 58. Total distance 443
-            10100010: 0x72 (r)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 239. Total distance 752
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 17. Total distance 82
-            0000100: 0x104
-                0x104 is Length code 260
-                0 extra length bits: Offset 0. Total length 6
-                Distance code 10011: 19
-                8 extra distance bits: Offset 221. Total distance 990
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 13. Total distance 142
-            10010010: 0x62 (b)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10011: 19
-                8 extra distance bits: Offset 112. Total distance 881
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 29. Total distance 542
-            10011110: 0x6e (n)
-            10010101: 0x65 (e)
-            01010000: 0x20
-            10011101: 0x6d (m)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 116. Total distance 501
-            10011000: 0x68 (h)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 51. Total distance 436
-            01010000: 0x20
-            10010001: 0x61 (a)
-            10010100: 0x64 (d)
-            10100110: 0x76 (v)
-            10010001: 0x61 (a)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 93. Total distance 606
-            00111010: 0x0a
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 47. Total distance 176
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 85. Total distance 470
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 54. Total distance 183
-            10010110: 0x66 (f)
-            10011001: 0x69 (i)
-            10010011: 0x63 (c)
-            10011001: 0x69 (i)
-            10010001: 0x61 (a)
-            10011100: 0x6c (l)
-            0000111: 0x107
-                0x107 is Length code 263
-                0 extra length bits: Offset 0. Total length 9
-                Distance code 01011: 11
-                4 extra distance bits: Offset 10. Total distance 59
-            10010100: 0x64 (d)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 4. Total distance 133
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 120. Total distance 505
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10001: 17
-                7 extra distance bits: Offset 106. Total distance 491
-            01010000: 0x20
-            10100100: 0x74 (t)
-            10011001: 0x69 (i)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 245. Total distance 758
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 00110: 6
-                2 extra distance bits: Offset 0. Total distance 9
-            10010010: 0x62 (b)
-            10010101: 0x65 (e)
-            10100100: 0x74 (t)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 152. Total distance 665
-            01010000: 0x20
-            10010101: 0x65 (e)
-            10010100: 0x64 (d)
-            10011001: 0x69 (i)
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10010: 18
-                8 extra distance bits: Offset 53. Total distance 566
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01101: 13
-                5 extra distance bits: Offset 29. Total distance 126
-            0000101: 0x105
+                Distance code 011: 8
+                3 extra distance bits: Offset 4. Total distance 21
+            10000: 0x61 (a)
+            10010: 0x6c (l)
+            110000: 0x2c (,)
+            110111: 0x105
                 0x105 is Length code 261
                 0 extra length bits: Offset 0. Total length 7
-                Distance code 10011: 19
-                8 extra distance bits: Offset 214. Total distance 983
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10011: 19
-                8 extra distance bits: Offset 46. Total distance 815
-            10010101: 0x65 (e)
-            01101010: 0x3a (:)
-            01010000: 0x20
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01110: 14
-                6 extra distance bits: Offset 38. Total distance 167
-            10011001: 0x69 (i)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01100: 12
-                5 extra distance bits: Offset 10. Total distance 75
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01010: 10
-                4 extra distance bits: Offset 15. Total distance 48
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10000: 16
-                7 extra distance bits: Offset 81. Total distance 338
-            10011100: 0x6c (l)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 112. Total distance 369
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01001: 9
-                3 extra distance bits: Offset 0. Total distance 25
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10010: 18
-                8 extra distance bits: Offset 46. Total distance 559
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10000: 16
-                7 extra distance bits: Offset 6. Total distance 263
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 10010: 18
-                8 extra distance bits: Offset 106. Total distance 619
-            10010101: 0x65 (e)
-            10011110: 0x6e (n)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 00110: 6
-                2 extra distance bits: Offset 0. Total distance 9
-            0000010: 0x102
-                0x102 is Length code 258
-                0 extra length bits: Offset 0. Total length 4
-                Distance code 01110: 14
-                6 extra distance bits: Offset 42. Total distance 171
-            10010110: 0x66 (f)
-            10011001: 0x69 (i)
-            10011110: 0x6e (n)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 01101: 13
-                5 extra distance bits: Offset 7. Total distance 104
-            10100100: 0x74 (t)
-            0000001: 0x101
-                0x101 is Length code 257
-                0 extra length bits: Offset 0. Total length 3
-                Distance code 10011: 19
-                8 extra distance bits: Offset 40. Total distance 809
-            00111010: 0x0a
-            10011101: 0x6d (m)
-            10011001: 0x69 (i)
-            10010100: 0x64 (d)
-            10011110: 0x6e (n)
-            0000011: 0x103
-                0x103 is Length code 259
-                0 extra length bits: Offset 0. Total length 5
-                Distance code 10100: 20
-                9 extra distance bits: Offset 339. Total distance 1364
-Decoding exception: Invalid length/distance (5, 1364) (history only contains 1285 bytes)
+                Distance code 011: 8
+                3 extra distance bits: Offset 7. Total distance 24
+            0110: 0x73 (s)
+            0100: 0x6f (o)
+            10100: 0x75 (u)
+            0011: 0x6e (n)
+            10001: 0x64 (d)
+            0110: 0x73 (s)
+            0000: 0x20
+            10000: 0x61 (a)
+            10101: 0x77 (w)
+            110101: 0x6b (k)
+            10101: 0x77 (w)
+            10000: 0x61 (a)
+            0101: 0x72 (r)
+            10001: 0x64 (d)
+            110001: 0x2e (.)
+            1110101: 0x22 (")
+            110000: 0x2c (,)
+            1111101: 0x100
+    Stored CRC32: 0xb3480c90
+    Stored Decompressed size: 244
+    Actual CRC32: 0xb3480c90
+    Actual Decompressed Size: 244
+Read 1 gzip members

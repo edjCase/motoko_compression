@@ -30,7 +30,7 @@ module {
         };
 
         public func peekBits(n: Nat) : Nat {
-            if (not is_valid(1)) {
+            if (not is_valid(n)) {
                 Debug.trap("BitReader.peekBits: out of bounds at offset");
             };
 
@@ -51,42 +51,8 @@ module {
             bits;
         };
 
-        public func peekExactByte() : Nat8 {
-            if (not is_valid(8)) {
-                Debug.trap("BitReader.peekByteExact: out of bounds");
-            };
-
-            BitBuffer.getByte(bitbuffer, offset);
-        };
-
-        public func readExactByte() : Nat8 {
-            let byte = peekExactByte();
-            offset += 8;
-            byte;
-        };
-
-        public func peekExactBytes(n: Nat) : [Nat8] {
-            if (not is_valid(n * 8)) {
-                Debug.trap("BitReader.peekBytesExact(): out of bounds");
-            };
-
-            Array.tabulate(
-                n,
-                func(i : Nat) : Nat8 {
-                    peekExactByte();
-                },
-            );
-        };
-
-        public func readExactBytes(n: Nat) : [Nat8] {
-            let bytes = peekExactBytes(n);
-            offset += n * 8;
-
-            bytes;
-        };
-
         public func peekByte() : Nat8{
-            if (not is_valid(1)) {
+            if (not is_valid(8)) {
                 Debug.trap("BitReader.peekByte: out of bounds");
             };
 
@@ -102,8 +68,6 @@ module {
 
         public func readByte() : Nat8 {
             let byte = peekByte();
-
-            Debug.print("BitReader.readByte: size "# debug_show((bitSize(), byteSizeExact())));
 
             offset += 8;
             byte;
@@ -125,7 +89,7 @@ module {
 
         public func readBytes(nbytes : Nat) : [Nat8] {
             let min_bytes = Nat.min(nbytes, byteSize());
-            Debug.print("About to read "# debug_show(min_bytes) #" bytes");
+
             Array.tabulate(
                 min_bytes,
                 func(i : Nat) : Nat8 {
@@ -159,7 +123,6 @@ module {
             clear();
         };
         
-
         public func bitSize() : Nat {
             if (tailBits + offset < (bitbuffer.bitSize() : Nat)) {
                 (bitbuffer.bitSize() - offset - tailBits : Nat);
@@ -197,7 +160,6 @@ module {
         };
 
         public func showTailBits() {
-            Debug.print("BitReader.showTailBits: tailBits "# debug_show(tailBits, tailBits/8));
             tailBits := 0;
         };
     };

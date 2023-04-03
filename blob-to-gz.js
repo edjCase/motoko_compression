@@ -1,7 +1,23 @@
 const fs = require('fs');
 
 // get input hex data from command-line argument
-const param = process.argv?.[2];
+let param = process.argv?.[2];
+
+if (param == "-rev"){
+    let bytes = fs.readFileSync("output.gz");
+
+    let hex = "";
+
+    for (const byte of bytes){
+        let hex_byte = byte.toString(16).padStart(2, '0');
+        hex += `\\${hex_byte}`;
+    }
+
+    fs.writeFileSync("output.data", hex);
+
+    return;
+}
+
 let input = "";
 
 if (fs.existsSync(param)){

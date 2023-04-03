@@ -11,7 +11,6 @@ import BitBuffer "mo:bitbuffer/BitBuffer";
 
 import Lzss "../LZSS";
 import Symbol "Symbol";
-import Huffman "../Huffman";
 
 import { nat_to_le_bytes } "../utils";
 
@@ -127,7 +126,7 @@ module {
 
         public func flush(bitbuffer : BitBuffer) {
             let symbol_encoder_rs = huffman.build(buffer);
-            let #ok(symbol_encoder) = huffman.build(buffer) else {
+            let #ok(symbol_encoder) = symbol_encoder_rs else {
                 return;
             };
 

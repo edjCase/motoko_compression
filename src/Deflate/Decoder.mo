@@ -31,17 +31,16 @@ module {
                     decode_non_compressed();
                 } else if (block_type == 1) {
                     decode_compressed(Symbol.FixedHuffmanCodec());
-                } else {
+                } else if (block_type == 2) {
                     decode_compressed(Symbol.DynamicHuffmanCodec());
+                }else {
+                    #err("Invalid block type " # debug_show block_type);
                 };
 
                 switch (res) {
                     case (#err(msg)) return #err(msg);
                     case (#ok(_)) {};
                 };
-
-                Debug.print("Decoded block of type " # debug_show block_type # " and size " # debug_show buffer.size());
-                Debug.print("reader size " # debug_show bitreader.bitSize());
 
                 if (bitreader.byteSize() > 32_000) {
                     return decode();
@@ -53,7 +52,7 @@ module {
 
         func decode_non_compressed() : Result<(), Text> {
             debug{
-                 bitreader.byteAlign();
+                bitreader.byteAlign();
                 let size_as_bytes = bitreader.readBytes(2);
                 let size = le_bytes_to_nat(size_as_bytes);
                 let bitnot_size = le_bytes_to_nat(bitreader.readBytes(2));
@@ -69,7 +68,6 @@ module {
                 };
 
                 let data = bitreader.readBytes(size);
-                Debug.print("Decoding non-compressed block of size " # debug_show size # " and data " # debug_show data.size());
 
                 for (byte in data.vals()) {
                     buffer.add(byte);
@@ -81,7 +79,6 @@ module {
 
         func decode_compressed(huffman : Symbol.HuffmanCodec) : Result<(), Text> {
             let symbol_decoder_res = huffman.load(bitreader);
-            Debug.print("peek byte decode_compressed: " # debug_show bitreader.peekByte());
 
             let symbol_decoder = switch (symbol_decoder_res) {
                 case (#ok(decoder)) decoder;
@@ -115,7 +112,6 @@ module {
                 };
             };
 
-            Debug.print("Decoded " # debug_show buffer.size() # " bytes");
             #ok();
         };
     };

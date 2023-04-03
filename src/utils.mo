@@ -1,4 +1,5 @@
 import Array "mo:base/Array";
+import Buffer "mo:base/Buffer";
 import Hash "mo:base/Hash";
 import Deque "mo:base/Deque";
 import Iter "mo:base/Iter";
@@ -6,16 +7,34 @@ import List "mo:base/List";
 import Nat8 "mo:base/Nat8";
 import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
+import Result "mo:base/Result";
+import Prelude "mo:base/Prelude";
 
 import Deiter "mo:itertools/Deiter";
 import Itertools "mo:itertools/Iter";
 
 module {
-
+    type Buffer<A> = Buffer.Buffer<A>;
     type Deque<A> = Deque.Deque<A>;
     type Iter<A> = Iter.Iter<A>;
+    type Result<A, B> = Result.Result<A, B>;
     type Hash = Hash.Hash;
     type List<A> = List.List<A>;
+    
+    public func buffer_opt_last<A>(buffer: Buffer<A>): ?A{
+        if (buffer.size() == 0) {
+            null
+        } else {
+            ?Buffer.last(buffer)
+        }
+    };
+
+    public func send_err<A, B, Err>(a: Result<A, Err>) : Result<B, Err>{
+        switch(a){
+            case (#ok(_)) Prelude.unreachable();
+            case (#err(e)) #err(e);
+        };
+    };
     
     public func nat_to_le_bytes(num : Nat, nbytes: Nat): [Nat8] {
         var n = num;

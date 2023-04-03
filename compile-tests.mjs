@@ -166,7 +166,7 @@ const wasm_files = await Promise.all(
 for (const wasm_file of wasm_files) {
     let res = await $`wasmtime ${wasm_file}`;
 
-    if (wasm_file.toLowerCase().includes("gzip/encoder")){
-        writeFileSync("output.data", res.toString(), "utf-8");
-    }
+    // if (wasm_file.toLowerCase().includes("gzip/encoder")){
+    //     writeFileSync("output.data", res.toString(), "utf-8");
+    // }
 }

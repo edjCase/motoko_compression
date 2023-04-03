@@ -5,7 +5,7 @@ import Text "mo:base/Text";
 
 import ActorSpec "../utils/ActorSpec";
 import Gzip "../../src/Gzip";
-import Dickens "../data-files/dickens5";
+import Example "../data-files/dickens5";
 
 let {
     assertTrue; assertFalse; assertAllTrue; 
@@ -49,16 +49,45 @@ let success = run([
             );
         }),
         it("Fixed Compression: long example", do{
-            let compressed_bytes : [Nat8] = Dickens.compressed;
+            let blob = Example.fixed_code_compression;
+            let compressed_bytes : [Nat8] = Blob.toArray(blob);
             let gzip_decoder = Gzip.Decoder();
             
             gzip_decoder.decode(compressed_bytes);
             let data = gzip_decoder.finish();
 
             assertTrue(
-                Text.decodeUtf8(data) == ?Dickens.text,
+                Text.decodeUtf8(data) == ?Example.text,
             );
-        })
+        }),
+        it("Dynamic Compression: short example", do{
+            let blob : Blob = "\1f\8b\08\00\00\00\00\00\00\03\6d\8e\d1\09\c3\30\0c\44\57\d1\00\25\7b\14\f2\d5\0d\d4\58\21\22\46\32\92\5c\e3\ed\1b\87\e6\23\d0\2f\1d\c7\bb\d3\cd\1c\64\18\d5\08\d8\61\ad\39\83\ae\60\54\28\38\58\65\82\f9\24\ac\43\b3\a1\1c\16\15\0f\94\c8\1d\aa\13\c4\46\90\2f\26\d1\87\17\ba\2a\30\28\41\53\4b\3e\c1\f3\00\59\f6\13\57\39\b2\d1\0b\dd\7f\41\db\78\d9\c6\8e\37\a6\71\3c\6b\29\fd\b6\e6\f5\87\ae\c2\12\24\c3\c4\fc\f8\f9\ae\55\92\03\b6\bd\a1\a5\e9\0b\7e\9c\b5\21\e8\00\00\00";
+            let compressed_bytes = Blob.toArray(blob);
+
+            let gzip_decoder = Gzip.Decoder();
+            gzip_decoder.decode(compressed_bytes);
+            let data = gzip_decoder.finish();
+            
+            assertTrue(
+                Text.decodeUtf8(data) == ?"Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.",
+            )
+        }),
+
+        it("Dynamic Compression: long example", do{
+            let blob : Blob = Example.dynamic_code_compression;
+            let compressed_bytes = Blob.toArray(blob);
+
+            let gzip_decoder = Gzip.Decoder();
+            gzip_decoder.decode(compressed_bytes);
+            let data = gzip_decoder.finish();
+            
+            let res = Text.decodeUtf8(data);
+
+            assertTrue(
+                res == ?Example.text,
+            )
+        
+        }),
     ])
 ]);
 

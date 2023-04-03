@@ -41,7 +41,7 @@ module {
 
         var deflate_options : DeflateOptions = {
             lzss = ?Lzss.Encoder(null);
-            block_size = 32 * 1024;
+            block_size = 1024 * 1024;
             dynamic_huffman = false;
         };
 

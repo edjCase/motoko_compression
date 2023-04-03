@@ -141,21 +141,9 @@ module {
             if (header_options == null){
                 header_options := ?decode_header();
                 reader.clearRead();
-                Debug.print("Gzip Decoder: Header decoded");
-
-                ignore do ?{
-                    if (header_options! == Header.defaultHeaderOptions()){
-                        Debug.print("Gzip Decoder: Header options match default");
-                    }else {
-                        Debug.print(debug_show header_options!);
-                    };
-                }
             };
 
-            // check if the blocks can be processed within the current limit
-            // if not set up timers split it to process at different block times
-            // do not start decompressing unless there are enough bytes to decompress in every block
-            Debug.print("before deflate.decode(): Bytes left: " # debug_show reader.byteSize());
+            
             let res = deflate_decoder.decode();
 
             switch(res){
@@ -164,9 +152,6 @@ module {
             };
 
             reader.clearRead();
-            Debug.print("after deflate.decode(): Bytes left: " # debug_show reader.byteSize());
-
-            // wait till the whole header has been added to the bitbuffer
         };
 
         public func finish() : Blob {
@@ -176,16 +161,8 @@ module {
                 case(#err(msg)) Debug.trap("Gzip Decoder: Error finishing: " # msg); 
             };
             
-            Debug.print("Deflate Decoder: Finished decoding");
-            Debug.print("Gzip Decoder: Bits left: " # debug_show reader.bitSize());
-
             reader.showTailBits();
-
-            Debug.print("Gzip Decoder: Showing tail bits");
-            Debug.print("Gzip Decoder: Bits left: " # debug_show reader.bitSize());
             reader.byteAlign();
-            Debug.print("Gzip Decoder: Bits left: " # debug_show reader.bitSize());
-
 
             let crc32_builder = CRC32.CRC32();
             crc32_builder.update(Buffer.toArray(buffer));
@@ -202,8 +179,6 @@ module {
             if (buffer.size() != input_size) {
                 Debug.trap("Gzip Encoder: Input size mismatch");
             };
-
-            Debug.print("Gzip Decoder: Finished decoding\n\n\n");
 
             Blob.fromArray(Buffer.toArray(buffer));
         };
