@@ -101,7 +101,7 @@ module {
         // - modification time
         let mtime = switch(header_options.modification_time) {
             case (?t) { t };
-            case (_) { 0 /* (Time.now() / 10 ** 9)  but it doesn't work locally */ };
+            case (_) { Time.now() / 10 ** 9 };
         };
 
         let mtime_nat = Int.abs(mtime);

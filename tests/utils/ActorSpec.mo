@@ -44,13 +44,16 @@ module {
   };
 
 
-  public func run(groups_ : [Group]) : Bool {
+  public func run(groups_ : [Group]) : (Bool, Text) {
     let (groups, status) = getGroups(groups_);
-    printGroups(groups, "");
-    Debug.print("\n");
-    Debug.print(printStatus(status));
-    Debug.print("\n");
-    status.failed == 0;
+
+    var response = "";
+    response #= printGroups(groups, "");
+    response #= "\n";
+    response #= printStatus(status);
+    response #= "\n";
+    
+    (status.failed == 0, response);
   };
 
   func getGroups(groups_ : [Group]) : ([Group], Status) {
@@ -71,7 +74,9 @@ module {
     (Array.freeze<Group>(groups), status);
   };
 
-  func printGroups(groups_ : [Group], indent : Text) {
+  func printGroups(groups_ : [Group], indent : Text) : Text {
+    var text = "";
+
     for (group in groups_.vals()) {
       let isDescribe = Iter.size(Array.keys(group.groups)) > 0;
       let newline = if isDescribe "\n" else "";
@@ -92,9 +97,12 @@ module {
           case (_, _, _, _) { ":" # printStatus(status); };
         };
       };
-      Debug.print(newline # indent # group.name # statusText # "\n");
-      printGroups(group.groups, indent # "  ");
+
+      text #= newline # indent # group.name # statusText # "\n"; 
+      text #= printGroups(group.groups, indent # "  ");
     };
+
+    text
   };
 
 

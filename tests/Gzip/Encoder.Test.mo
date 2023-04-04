@@ -37,7 +37,6 @@ let success = run([
                     );
                 },
             ),
-
             describe("Compression: Fixed Huffman codes", [
                 it(
                     "Compress \"Hello world\" (no back references)",

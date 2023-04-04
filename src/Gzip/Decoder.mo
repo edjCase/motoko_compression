@@ -129,7 +129,7 @@ module {
                 extra_fields;
                 filename;
                 comment;
-                modification_time = ?mtime; // Time.now() doesn't work locally
+                modification_time = ?mtime;
                 compression_level;
                 os;
             } : HeaderOptions;
