@@ -27,7 +27,7 @@ jobs:
                   mops sources
             
             - name: install zx
-              npm i -g zx
+              run: npm i -g zx
 
             - name: Detect Warnings
               run: make no-warn
