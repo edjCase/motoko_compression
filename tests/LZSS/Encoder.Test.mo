@@ -47,10 +47,12 @@ let success = run([
             it(
                 "encoding",
                 do {
-                    let bytes = Text.encodeUtf8("abracadabra");
+                    let blob = Text.encodeUtf8("abracadabra");
+                    let bytes = Blob.toArray(blob);
+
                     let encoded = LZSS.encode(bytes);
                     let decoded = LZSS.decode(encoded);
-                    assertTrue(bytes == decoded);
+                    assertTrue(bytes == Buffer.toArray(decoded));
                 },
             ),
             describe(
@@ -101,14 +103,15 @@ let success = run([
                     it(
                         "encoding",
                         do {
-                            let bytes = Text.encodeUtf8("abracadabra");
+                            let blob = Text.encodeUtf8("abracadabra");
+                            let bytes = Blob.toArray(blob);
                             let lzss = LZSS.Encoder(null);
                             let buffer = Buffer.Buffer<LZSS.LZSSEntry>(8);
 
-                            lzss.encodeBlob(bytes, buffer);
+                            lzss.encode(bytes, buffer);
 
                             let decoded = LZSS.decode(buffer);
-                            assertTrue(bytes == decoded);
+                            assertTrue(bytes == Buffer.toArray(decoded));
                         },
                     ),
                     it(
@@ -118,6 +121,8 @@ let success = run([
 
                                 let lzss = LZSS.Encoder(null);
                                 let blob = Text.encodeUtf8(Example.text);
+                                let bytes = Blob.toArray(blob);
+
                                 let buffer = Buffer.Buffer<LZSS.LZSSEntry>(8);
                                 lzss.encodeBlob(blob, buffer);
 
@@ -125,7 +130,7 @@ let success = run([
                                 Debug.print("Example text size: " # debug_show (lzss.size()));
 
                                 let decoded = LZSS.decode(buffer);
-                                assert decoded == blob;
+                                assert Buffer.toArray(decoded) == Blob.toArray(blob);
                             };
                             Debug.print("Prefix Encoder: Success!");
                             assertTrue(true);

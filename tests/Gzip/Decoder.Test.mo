@@ -1,4 +1,5 @@
 import Blob "mo:base/Blob";
+import Buffer "mo:base/Buffer";
 import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import Text "mo:base/Text";
@@ -19,10 +20,11 @@ let success = run([
             let gzip_decoder = Gzip.Decoder();
 
             gzip_decoder.decode(compressed_bytes);
-            let data = gzip_decoder.finish();
+            let bytes = gzip_decoder.finish();
+            let decoded = Blob.fromArray(Buffer.toArray(bytes));
 
             assertTrue(
-                Text.decodeUtf8(data) == ?"Hello World",
+                decoded == "Hello World",
             );
         }),
         it("Fixed Compression", do{
@@ -30,10 +32,11 @@ let success = run([
             let gzip_decoder = Gzip.Decoder();
             
             gzip_decoder.decode(compressed_bytes);
-            let data = gzip_decoder.finish();
+            let bytes = gzip_decoder.finish();
+            let decoded = Blob.fromArray(Buffer.toArray(bytes));
 
             assertTrue(
-                Text.decodeUtf8(data) == ?"Hello World",
+                decoded == "Hello World",
             );
         }),
 
@@ -42,10 +45,11 @@ let success = run([
             let gzip_decoder = Gzip.Decoder();
             
             gzip_decoder.decode(compressed_bytes);
-            let data = gzip_decoder.finish();
+            let bytes = gzip_decoder.finish();
+            let decoded = Blob.fromArray(Buffer.toArray(bytes));
 
             assertTrue(
-                Text.decodeUtf8(data) == ?"Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.",
+                decoded == "Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.",
             );
         }),
         it("Fixed Compression: long example", do{
@@ -54,10 +58,11 @@ let success = run([
             let gzip_decoder = Gzip.Decoder();
             
             gzip_decoder.decode(compressed_bytes);
-            let data = gzip_decoder.finish();
+            let bytes = gzip_decoder.finish();
+            let decoded = Blob.fromArray(Buffer.toArray(bytes));
 
             assertTrue(
-                Text.decodeUtf8(data) == ?Example.text,
+                decoded == Text.encodeUtf8(Example.text),
             );
         }),
         it("Dynamic Compression: short example", do{
@@ -66,10 +71,11 @@ let success = run([
 
             let gzip_decoder = Gzip.Decoder();
             gzip_decoder.decode(compressed_bytes);
-            let data = gzip_decoder.finish();
+            let bytes = gzip_decoder.finish();
+            let decoded = Blob.fromArray(Buffer.toArray(bytes));
             
             assertTrue(
-                Text.decodeUtf8(data) == ?"Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.",
+                decoded == "Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.",
             )
         }),
 
@@ -79,12 +85,11 @@ let success = run([
 
             let gzip_decoder = Gzip.Decoder();
             gzip_decoder.decode(compressed_bytes);
-            let data = gzip_decoder.finish();
+            let bytes = gzip_decoder.finish();
+            let decoded = Blob.fromArray(Buffer.toArray(bytes));
             
-            let res = Text.decodeUtf8(data);
-
             assertTrue(
-                res == ?Example.text,
+                decoded == Text.encodeUtf8(Example.text),
             )
         
         }),

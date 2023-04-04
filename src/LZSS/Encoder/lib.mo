@@ -36,11 +36,11 @@ module {
         Encoder(null);
     };
 
-    public func encode(blob : Blob) : Buffer<LZSSEntry> {
+    public func encode(bytes : [Nat8]) : Buffer<LZSSEntry> {
         let encoder = Default();
         let buffer = Buffer.Buffer<LZSSEntry>(8);
 
-        encoder.encodeBlob(blob, buffer);
+        encoder.encode(bytes, buffer);
         buffer
     };
 

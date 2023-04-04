@@ -46,6 +46,7 @@ module {
         size : () -> Nat;
         append : ([Nat8]) -> ();
         flush : (BitBuffer) -> ();
+        clear : () -> ();
     };
 
     public func Block(block_type: BlockType, opt_lzss: ?Lzss.Encoder): BlockInterface {
@@ -103,6 +104,12 @@ module {
                 BitBuffer.addByte(bitbuffer, byte);
             };
         };
+
+        public func clear(){
+            input_size := 0;
+            deque := Deque.empty<Nat8>();
+            byte_aligned := false;
+        };
     };
 
     public class Compress(lzss : Lzss.Encoder, huffman : Symbol.FixedHuffmanCodec) {
@@ -124,6 +131,16 @@ module {
             lzss.encode(bytes, sink);
         };
 
+        func clean(){
+            input_size := 0;
+            buffer.clear();
+        };
+
+        public func clear(){
+            clean();
+            lzss.clear();
+        };
+
         public func flush(bitbuffer : BitBuffer) {
             let symbol_encoder_rs = huffman.build(buffer);
             let #ok(symbol_encoder) = symbol_encoder_rs else {
@@ -136,8 +153,7 @@ module {
 
             symbol_encoder.encode(bitbuffer, #end_of_block);
 
-            input_size := 0;
-            buffer.clear();
+            clean();
         };
 
     };

@@ -9,7 +9,7 @@ module {
     type Buffer<A> = Buffer.Buffer<A>;
     public type LZSSEntry = Common.LZSSEntry;
 
-    public func encode(blob: Blob) : Buffer<LZSSEntry> = LZSSEncoder.encode(blob);
+    public func encode(bytes: [Nat8]) : Buffer<LZSSEntry> = LZSSEncoder.encode(bytes);
 
     public type Encoder = LZSSEncoder.Encoder;
     public let Encoder = LZSSEncoder.Encoder;

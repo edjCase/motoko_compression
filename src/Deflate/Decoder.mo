@@ -18,7 +18,7 @@ module {
     public class Decoder(bitreader : BitReader, output_buffer : ?Buffer.Buffer<Nat8>) {
         var end_of_blocks = false;
         let buffer = Option.get(output_buffer, Buffer.Buffer<Nat8>(8));
-        let lzss_decoder = Lzss.Decoder(?buffer);
+        let lzss_decoder = Lzss.Decoder();
 
         public func decode() : Result<(), Text> {
             debug {
@@ -94,8 +94,8 @@ module {
 
                 switch (symbol) {
                     case (#end_of_block) break _loop;
-                    case (#literal(literal)) lzss_decoder.decodeEntry(#literal(literal));
-                    case (#pointer(back_ref)) lzss_decoder.decodeEntry(#pointer(back_ref));
+                    case (#literal(literal)) lzss_decoder.decodeEntry(buffer, #literal(literal));
+                    case (#pointer(back_ref)) lzss_decoder.decodeEntry(buffer, #pointer(back_ref));
                 };
             };
 
