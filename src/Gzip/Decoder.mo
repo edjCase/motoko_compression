@@ -31,7 +31,7 @@ module {
         comment : Text;
         mtime : Time.Time;
         fields : [Header.ExtraField];
-        data : Buffer<Nat8>;
+        bytes : Buffer<Nat8>;
     };
 
     /// Gzip Decoder class
@@ -158,12 +158,12 @@ module {
                 case (#err(msg)) Debug.trap("Gzip Decoder Error: " # msg);
             };
 
-            reader.clearRead();
-
             for (i in Iter.range(update_index + 1, buffer.size())) {
                 crc32_builder.updateByte(buffer.get(i - 1));
                 update_index += 1;
             };
+
+            reader.clearRead();
         };
 
         public func clear() {
@@ -179,20 +179,20 @@ module {
 
         };
 
-        public func finish() : Buffer<Nat8> {
+        public func finish() : DecodedResponse {
             let res = deflate_decoder.finish();
             switch (res) {
                 case (#ok(_)) {};
                 case (#err(msg)) Debug.trap("Gzip Decoder Error: " # msg);
             };
 
-            reader.showTailBits();
-            reader.byteAlign();
-
             for (i in Iter.range(update_index + 1, buffer.size())) {
                 crc32_builder.updateByte(buffer.get(i - 1));
                 update_index += 1;
             };
+
+            reader.showTailBits();
+            reader.byteAlign();
 
             let calc_crc32 = crc32_builder.finish();
 
@@ -209,9 +209,26 @@ module {
             };
 
             let output_buffer = buffer;
+
+            let opt = do ? {
+                let header = header_options!;
+
+                let response : DecodedResponse = {
+                    filename = Option.get(header.filename, "");
+                    comment = Option.get(header.comment, "");
+                    mtime = header.modification_time!;
+                    fields = header.extra_fields;
+                    bytes = output_buffer
+                }
+            };
+
             clear();
 
-            output_buffer;
+            switch(opt){
+                case (?res) return res;
+                case (_) Debug.trap("Gzip Error: Cannot create a DecodedResponse because the Gzip header is missing");
+            };
+
         };
 
     };

@@ -22,12 +22,9 @@ jobs:
                   npm --yes -g i ic-mops@0.8.3
                   mops i
                   mops sources
-            
-            - name: install zx
-              run: npm i -g zx
 
             - name: Detect Warnings
               run: make no-warn
 
             - name: run actor tests
-              run: zx actor-tests.mjs
+              run: npx zx actor-tests.mjs
