@@ -43,3 +43,5 @@ console.log(output);
 if (!success){
     process.exitCode = 1;
 }
+
+exit();
