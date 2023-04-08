@@ -11,11 +11,17 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                node-version: 18
+                node-version: 14
             - uses: aviate-labs/setup-dfx@v0.2.3
               with:
                 vessel-version: 0.6.3
                 dfx-version: 0.13.1
+              
+            - name: update moc version in dfx
+              run: |
+                dfx cache install
+                rm -rvf $(dfx cache show)/moc
+                cp $(vessel bin)/moc $(dfx cache show)
 
             - name: install mops
               run: |
@@ -27,6 +33,4 @@ jobs:
               run: make no-warn
 
             - name: run actor tests
-              run: | 
-                dfx start --background
-                node actor-tests.js
+              run: make actor-tests
