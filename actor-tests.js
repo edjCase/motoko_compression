@@ -1,22 +1,7 @@
-#!/usr/bin/env zx
+const {execSync, spawn } = require("child_process");
 
-import fs, { createReadStream, existsSync, statSync, writeFileSync } from "fs";
-import events from "events";
-import { readFile, stat } from "fs/promises";
-import readline from "readline";
-import { spawn } from "child_process";
-import path from "path";
-import { unescape } from "querystring";
-// import 'zx/globals'
-
-$.verbose = false;
-
-try {
-    await $`dfx start --background`;
-} catch {}
-
-await $`dfx deploy test --yes`;
-let res = await $`dfx canister call test runTests`;
+execSync(`dfx deploy test --yes`);
+let res = execSync(`dfx canister call test runTests`);
 res = res.toString().trim();
 res = res.slice(1, res.length - 1);
 res = res.trim();
@@ -43,5 +28,3 @@ console.log(output);
 if (!success){
     process.exitCode = 1;
 }
-
-exit();
