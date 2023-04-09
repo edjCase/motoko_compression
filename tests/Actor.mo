@@ -38,7 +38,7 @@ actor {
             res := res and success;
         };
 
-        (false, output);
+        (res, output);
     };
 
     let {

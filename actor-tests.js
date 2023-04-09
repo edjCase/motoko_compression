@@ -24,7 +24,8 @@ output = output.replace(/\\"/g, "\"");
 output = output.replace(/\\u{1b}/g, "\u{1b}");
 
 console.log(output);
-console.log(success);
+console.log({success});
+
 if (!success){
     process.exitCode = 1;
 }
