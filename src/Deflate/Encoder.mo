@@ -61,8 +61,13 @@ module {
             block.flush(bitbuffer);
         };
 
+        public func clear(){
+            block.clear();
+        };
+
         public func finish(): BitBuffer {
             flush(true);
+            clear();
             return bitbuffer;
         };
     };

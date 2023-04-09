@@ -47,7 +47,7 @@ const wasm_path = (file) => {
 
 let test_files = await glob("./test?(s)/**/*.(test|Test).mo");
 
-let moc = (await $`vessel bin`).stdout.toString().trim() + "/moc";
+let moc = /*(await $`vessel bin`).stdout.toString().trim() + */ ".vessel/.bin/0.8.3/moc";
 let mops_sources = (await $`mops sources`).stdout.toString().split("\n");
 
 let packages = {};

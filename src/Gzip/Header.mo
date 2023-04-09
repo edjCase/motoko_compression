@@ -89,7 +89,7 @@ module {
         extra_fields = [];
         filename = null;
         comment = null;
-        modification_time = ?12; // Time.now() doesn't work locally
+        modification_time = ?Time.now();
         compression_level = #Unknown;
         os = #Unix;
     };

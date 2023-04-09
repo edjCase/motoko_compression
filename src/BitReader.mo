@@ -109,18 +109,9 @@ module {
         };
 
         public func clear() {
-            if (tailBits == 0){
-                bitbuffer.clear();
-                offset := 0;
-            }else{
-                offset += bitSize();
-                clearRead();
-            }
-        };
-
-        public func clearAll(){
+            offset := 0;
             tailBits := 0;
-            clear();
+            bitbuffer.clear();
         };
         
         public func bitSize() : Nat {

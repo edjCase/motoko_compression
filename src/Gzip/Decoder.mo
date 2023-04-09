@@ -12,7 +12,7 @@ import Result "mo:base/Result";
 import Time "mo:base/Time";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
-import CRC32 "mo:hash/CRC32";
+import CRC32 "../libs/CRC32";
 
 import Deflate "../Deflate";
 import Lzss "../LZSS";
@@ -22,21 +22,29 @@ import BitReader "../BitReader";
 import { nat_to_le_bytes; le_bytes_to_nat } "../utils";
 
 module {
+    type Buffer<A> = Buffer.Buffer<A>;
     type HeaderOptions = Header.HeaderOptions;
     type DeflateOptions = Deflate.DeflateOptions;
+
+    public type DecodedResponse = {
+        filename : Text;
+        comment : Text;
+        mtime : Time.Time;
+        fields : [Header.ExtraField];
+        bytes : Buffer<Nat8>;
+    };
 
     /// Gzip Decoder class
     /// Requires that the full header is available in the `init_bytes` array before initialization
     public class Decoder() {
-        let decoded_bytes = Buffer.Buffer<Nat8>(8);
         let reader = BitReader.fromBytes([]);
         reader.hideTailBits(8 * 8);
 
-        let buffer = Buffer.Buffer<Nat8>(8);
-        // let crc32_builder = CRC32.CRC32();
+        var buffer = Buffer.Buffer<Nat8>(8);
         var header_options : ?HeaderOptions = null;
-        let deflate_decoder = Deflate.Decoder(reader, ?buffer);
-        let possible_footer_bytes = Array.init<Nat8>(8, 0);
+        let crc32_builder = CRC32.CRC32();
+        var deflate_decoder = Deflate.Decoder(reader, ?buffer);
+        var update_index = 0;
 
         private func decode_header() : HeaderOptions {
 
@@ -61,7 +69,7 @@ module {
             let os = Header.byteToOs(reader.readByte());
 
             let extra_fields = switch (has_extra_fields) {
-                case (false){ [] };
+                case (false) { [] };
                 case (true) {
                     let extra_fields = Buffer.Buffer<Header.ExtraField>(8);
                     let extra_fields_size_as_bytes = reader.readBytes(2);
@@ -119,7 +127,7 @@ module {
                 let calculated_crc16 = Nat32.toNat(calculated_crc32 & 0xffff);
 
                 if (crc16 != calculated_crc16) {
-                    Debug.trap("Gzip Encoder: CRC16 Header verification mismatch");
+                    Debug.trap("Gzip Decoder: CRC16 Header verification mismatch");
                 };
             };
 
@@ -129,7 +137,7 @@ module {
                 extra_fields;
                 filename;
                 comment;
-                modification_time = ?mtime; // Time.now() doesn't work locally
+                modification_time = ?mtime;
                 compression_level;
                 os;
             } : HeaderOptions;
@@ -137,50 +145,90 @@ module {
 
         public func decode(bytes : [Nat8]) {
             reader.addBytes(bytes);
-            
-            if (header_options == null){
+
+            if (header_options == null) {
                 header_options := ?decode_header();
                 reader.clearRead();
             };
 
-            
             let res = deflate_decoder.decode();
 
-            switch(res){
-                case(#ok(_)) {};
-                case(#err(msg)) Debug.trap("Gzip Decoder: Error decoding: " # msg); 
+            switch (res) {
+                case (#ok(_)) {};
+                case (#err(msg)) Debug.trap("Gzip Decoder Error: " # msg);
+            };
+
+            for (i in Iter.range(update_index + 1, buffer.size())) {
+                crc32_builder.updateByte(buffer.get(i - 1));
+                update_index += 1;
             };
 
             reader.clearRead();
         };
 
-        public func finish() : Blob {
+        public func clear() {
+
+            header_options := null;
+            update_index := 0;
+
+            reader.clear();
+            reader.hideTailBits(8 * 8);
+
+            buffer := Buffer.Buffer<Nat8>(8);
+            deflate_decoder := Deflate.Decoder(reader, ?buffer);
+
+        };
+
+        public func finish() : DecodedResponse {
             let res = deflate_decoder.finish();
-            switch(res){
-                case(#ok(_)) {};
-                case(#err(msg)) Debug.trap("Gzip Decoder: Error finishing: " # msg); 
+            switch (res) {
+                case (#ok(_)) {};
+                case (#err(msg)) Debug.trap("Gzip Decoder Error: " # msg);
             };
-            
+
+            for (i in Iter.range(update_index + 1, buffer.size())) {
+                crc32_builder.updateByte(buffer.get(i - 1));
+                update_index += 1;
+            };
+
             reader.showTailBits();
             reader.byteAlign();
 
-            let crc32_builder = CRC32.CRC32();
-            crc32_builder.update(Buffer.toArray(buffer));
             let calc_crc32 = crc32_builder.finish();
 
             let crc32 = (le_bytes_to_nat(reader.readBytes(4)));
 
             if (crc32 != Nat32.toNat(calc_crc32)) {
-                Debug.trap("Gzip Encoder: CRC32 Footer verification mismatch");
+                Debug.trap("Gzip Decoder: CRC32 Footer verification mismatch");
             };
 
             let input_size = le_bytes_to_nat(reader.readBytes(4));
 
             if (buffer.size() != input_size) {
-                Debug.trap("Gzip Encoder: Input size mismatch");
+                Debug.trap("Gzip Decoder: Input size mismatch");
             };
 
-            Blob.fromArray(Buffer.toArray(buffer));
+            let output_buffer = buffer;
+
+            let opt = do ? {
+                let header = header_options!;
+
+                let response : DecodedResponse = {
+                    filename = Option.get(header.filename, "");
+                    comment = Option.get(header.comment, "");
+                    mtime = header.modification_time!;
+                    fields = header.extra_fields;
+                    bytes = output_buffer
+                }
+            };
+
+            clear();
+
+            switch(opt){
+                case (?res) return res;
+                case (_) Debug.trap("Gzip Error: Cannot create a DecodedResponse because the Gzip header is missing");
+            };
+
         };
 
     };

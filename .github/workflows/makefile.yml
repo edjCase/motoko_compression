@@ -1,10 +1,7 @@
 name: Makefile CI
 
 on:
-    push:
-        branches: ["main"]
-    pull_request:
-        branches: ["main"]
+    [push, pull_request]
 
 jobs:
     build:
@@ -18,21 +15,22 @@ jobs:
             - uses: aviate-labs/setup-dfx@v0.2.3
               with:
                 vessel-version: 0.6.3
-                dfx-version: 0.12.1
+                dfx-version: 0.13.1
+              
+            - name: update moc version in dfx
+              run: |
+                dfx cache install
+                rm -rvf $(dfx cache show)/moc
+                cp $(vessel bin)/moc $(dfx cache show)
 
             - name: install mops
               run: |
                   npm --yes -g i ic-mops@0.8.3
                   mops i
                   mops sources
-            
-            - name: install wasmtime
-              run: |
-                curl https://wasmtime.dev/install.sh -sSf | bash
-                echo "$HOME/.wasmtime/bin" >> $GITHUB_PATH
 
             - name: Detect Warnings
               run: make no-warn
 
-            - name: Run Tests
-              run: make compile-tests 
+            - name: run actor tests
+              run: make actor-tests
