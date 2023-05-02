@@ -21,7 +21,7 @@ let success = run([
 
             gzip_decoder.decode(compressed_bytes);
             let res = gzip_decoder.finish();
-            let decoded = Blob.fromArray(Buffer.toArray(res.bytes));
+            let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
             assertTrue(
                 decoded == "Hello World",
@@ -33,7 +33,7 @@ let success = run([
             
             gzip_decoder.decode(compressed_bytes);
             let res = gzip_decoder.finish();
-            let decoded = Blob.fromArray(Buffer.toArray(res.bytes));
+            let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
             assertTrue(
                 decoded == "Hello World",
@@ -46,7 +46,7 @@ let success = run([
             
             gzip_decoder.decode(compressed_bytes);
             let res = gzip_decoder.finish();
-            let decoded = Blob.fromArray(Buffer.toArray(res.bytes));
+            let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
             assertTrue(
                 decoded == "Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.",
@@ -59,7 +59,7 @@ let success = run([
             
             gzip_decoder.decode(compressed_bytes);
             let res = gzip_decoder.finish();
-            let decoded = Blob.fromArray(Buffer.toArray(res.bytes));
+            let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
             assertTrue(
                 decoded == Text.encodeUtf8(Example.text),
@@ -72,7 +72,7 @@ let success = run([
             let gzip_decoder = Gzip.Decoder();
             gzip_decoder.decode(compressed_bytes);
             let res = gzip_decoder.finish();
-            let decoded = Blob.fromArray(Buffer.toArray(res.bytes));
+            let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
             
             assertTrue(
                 decoded == "Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.",
@@ -86,7 +86,7 @@ let success = run([
             let gzip_decoder = Gzip.Decoder();
             gzip_decoder.decode(compressed_bytes);
             let res = gzip_decoder.finish();
-            let decoded = Blob.fromArray(Buffer.toArray(res.bytes));
+            let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
             
             assertTrue(
                 decoded == Text.encodeUtf8(Example.text),

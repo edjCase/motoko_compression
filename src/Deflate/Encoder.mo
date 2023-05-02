@@ -3,55 +3,74 @@ import Buffer "mo:base/Buffer";
 import Iter "mo:base/Iter";
 import Option "mo:base/Option";
 import Nat "mo:base/Nat";
+import Debug "mo:base/Debug";
 import Nat16 "mo:base/Nat16";
-
+import Timer "mo:base/Timer";
+import Prim "mo:prim";
 import BitBuffer "mo:bitbuffer/BitBuffer";
 
 import Block "Block";
 import Symbol "Symbol";
-import LZSS "../LZSS";
+import Lzss "../LZSS";
 import LzssEncoder "../LZSS/Encoder";
+
+import { INSTRUCTION_LIMIT } "../utils";
 
 module {
     type Buffer<A> = Buffer.Buffer<A>;
     type BitBuffer = BitBuffer.BitBuffer;
     type Iter<A> = Iter.Iter<A>;
-    type LZSSEntry = LZSS.LZSSEntry;
+    type LzssEntry = Lzss.LzssEntry;
     type LzssEncoder = LzssEncoder.Encoder;
     type Symbol = Symbol.Symbol;
 
     public type DeflateOptions = {
-        block_size: Nat;
-        dynamic_huffman: Bool;
-        lzss: ?LzssEncoder;
+        block_size : Nat;
+        dynamic_huffman : Bool;
+        lzss : ?LzssEncoder;
     };
 
     public class Encoder(
         bitbuffer : BitBuffer,
-        options: DeflateOptions
+        options : DeflateOptions,
     ) {
-
-        let block_type = switch(options.lzss){
+        let block_type = switch (options.lzss) {
             case (null) { #Raw };
-            case (?_) { 
-                if(options.dynamic_huffman){
-                    #Dynamic
+            case (?_) {
+                if (options.dynamic_huffman) {
+                    #Dynamic({
+                        lzss = Option.get(options.lzss, Lzss.Encoder(null));
+                        block_limit = options.block_size;
+                    });
                 } else {
-                    #Fixed
-                }
+                    #Fixed({
+                        lzss = Option.get(options.lzss, Lzss.Encoder(null));
+                        block_limit = options.block_size;
+                    });
+                };
             };
         };
-        
-        let block = Block.Block(block_type, options.lzss);
 
-        public func encode(data: [Nat8]) {
-            block.append(data);
+        let block = Block.Block(block_type);
 
-            while (block.size() > options.block_size){
+        public func encode_byte(byte : Nat8) {
+            if (block.size() >= options.block_size) {
                 flush(false);
             };
+
+            block.add(byte);
         };
         
+        public func encode(data : [Nat8]) {
+            for (byte in data.vals()){
+                if (block.size() >= options.block_size) {
+                    flush(false);
+                };
+
+                block.add(byte);
+            };
+        };
+
         public func flush(is_final : Bool) {
             let size = bitbuffer.bitSize();
             bitbuffer.addBit(is_final);
@@ -61,11 +80,11 @@ module {
             block.flush(bitbuffer);
         };
 
-        public func clear(){
+        public func clear() {
             block.clear();
         };
 
-        public func finish(): BitBuffer {
+        public func finish() : BitBuffer {
             flush(true);
             clear();
             return bitbuffer;

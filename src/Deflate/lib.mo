@@ -21,7 +21,7 @@ module {
     type BitReader = BitReader.BitReader;
 
     type Iter<A> = Iter.Iter<A>;
-    type LZSSEntry = LZSS.LZSSEntry;
+    type LzssEntry = LZSS.LzssEntry;
     type LzssEncoder = LzssEncoder.Encoder;
     type Symbol = Symbol.Symbol;
 

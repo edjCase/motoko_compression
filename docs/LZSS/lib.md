@@ -1,14 +1,14 @@
 # LZSS/lib
 
-## Type `LZSSEntry`
+## Type `LzssEntry`
 ``` motoko no-repl
-type LZSSEntry = Common.LZSSEntry
+type LzssEntry = Common.LzssEntry
 ```
 
 
 ## Function `encode`
 ``` motoko no-repl
-func encode(blob : Blob) : Buffer<LZSSEntry>
+func encode(bytes : [Nat8]) : Buffer<LzssEntry>
 ```
 
 

@@ -1,4 +1,26 @@
 ## Deflate.mo
+This is a compression library that implements the DEFLATE lossless compression algorithm for compressing data into the Gzip format. It is heavily inspired by the [libflate](https://github.com/sile/libflate) rust library.
+
+
+## Usage
+```motoko
+import Blob "mo:base/Blob";
+import Text "mo:base/Text";
+
+import Gzip "mo:deflate/Gzip";
+
+let data = Blob.toArray(Text.encodeUtf8("Hello, world!"));
+
+let gzip_encoder = Gzip.EncoderBuilder().build();
+gzip_encoder.encode(data);
+let compressed = gzip_encoder.finish();
+
+let gzip_decoder = Gzip.Decoder();
+gzip_decoder.decode(compressed);
+let decompressed = gzip_decoder.finish();
+
+assert (decompressed.bytes == data);
+```
 
 ## Resources
 [Deflate's RFC Standard](https://www.rfc-editor.org/rfc/rfc1951#section-1.5)

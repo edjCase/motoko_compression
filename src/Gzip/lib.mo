@@ -5,15 +5,15 @@ import Header "Header";
 import Deflate "../Deflate";
 
 module {
-    public type HeaderOptions = Header.HeaderOptions;
+    public type Header = Header.Header;
     public type DeflateOptions = Deflate.DeflateOptions;
     
     public type Encoder = GzipEncoder.Encoder;
     public type EncoderBuilder = GzipEncoder.EncoderBuilder;
 
-    public let Encoder : (Header.HeaderOptions, Deflate.DeflateOptions) ->  GzipEncoder.Encoder = GzipEncoder.Encoder;
+    public let Encoder : (Header.Header, Deflate.DeflateOptions) ->  GzipEncoder.Encoder = GzipEncoder.Encoder;
     public let EncoderBuilder : () -> GzipEncoder.EncoderBuilder = GzipEncoder.EncoderBuilder;
-    public let DefaultEncoder : () -> GzipEncoder.Encoder = GzipEncoder.DefaultEncoder;
 
+    public type Decoder = GzipDecoder.Decoder;
     public let Decoder : () -> GzipDecoder.Decoder = GzipDecoder.Decoder;
 }

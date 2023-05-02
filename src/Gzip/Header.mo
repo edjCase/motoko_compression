@@ -1,13 +1,21 @@
 import Buffer "mo:base/Buffer";
+import Blob "mo:base/Blob";
+import Iter "mo:base/Iter";
 import Option "mo:base/Option";
 import Int "mo:base/Int";
 import Nat32 "mo:base/Nat32";
 import Nat64 "mo:base/Nat64";
+import Text "mo:base/Text";
 import Time "mo:base/Time";
 
+import CRC32 "../libs/CRC32";
 import BitBuffer "mo:bitbuffer/BitBuffer";
 
-module {
+import { nat_to_le_bytes; INSTRUCTION_LIMIT } "../utils";
+
+
+module Header {
+    type BitBuffer = BitBuffer.BitBuffer;
     type Buffer<A> = Buffer.Buffer<A>;
     type Time = Time.Time;
 
@@ -72,7 +80,7 @@ module {
         #Unknown;
     };
 
-    public type HeaderOptions = {
+    public type Header = {
         is_text : Bool;
         is_verified : Bool;
         extra_fields : [ExtraField];
@@ -83,7 +91,7 @@ module {
         os : Os;
     };
 
-    public func defaultHeaderOptions() : HeaderOptions = {
+    public func defaultHeaderOptions() : Header = {
         is_text = false;
         is_verified = false;
         extra_fields = [];
@@ -94,23 +102,91 @@ module {
         os = #Unix;
     };
 
-    // public class HeaderBuilder() = self{
-    //     var is_text : Bool;
-    //     var is_verified : Bool;
-    //     var extra_fields : [ExtraField];
-    //     var filename : ?Text;
-    //     var comment : ?Text;
-    //     var modification_time : ?Time;
-    //     var compression_level: CompressionLevel;
-    //     var os : Os;
+    public func encode(bitbuffer : BitBuffer, header : Header) {
+        // Add Header bytes to the bitbuffer
+        // - magic header
+        BitBuffer.addByte(bitbuffer, 0x1f);
+        BitBuffer.addByte(bitbuffer, 0x8b);
 
-    //     public func text() : HeaderBuilder {
-    //         self.is_text := true;
-    //         self
-    //     };
+        // - compression method: deflate
+        BitBuffer.addByte(bitbuffer, 8);
 
-    //     public func ex
-    // };
+        // - flags
+        bitbuffer.addBit(header.is_text);
+        bitbuffer.addBit(header.is_verified);
+        bitbuffer.addBit(header.extra_fields.size() > 0);
+        bitbuffer.addBit(Option.isSome(header.filename));
+        bitbuffer.addBit(Option.isSome(header.comment));
+        bitbuffer.byteAlign();
+
+        // - modification time
+        let mtime = switch (header.modification_time) {
+            case (?t) { t };
+            case (_) { Time.now() / 10 ** 9 };
+        };
+
+        let mtime_nat = Int.abs(mtime);
+        BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(mtime_nat, 4));
+
+        // - compression method flags
+        let compression_level = Header.compressionLevelToByte(header.compression_level);
+        BitBuffer.addByte(bitbuffer, compression_level);
+
+        // - operating system
+        let os = Header.osToByte(header.os);
+        BitBuffer.addByte(bitbuffer, os);
+
+        // - extra fields
+        let extra_fields = header.extra_fields;
+
+        if (extra_fields.size() > 0) {
+            var fields_total_size = 0;
+
+            for ({ data } in header.extra_fields.vals()) {
+                fields_total_size += (4 + data.size());
+            };
+
+            BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(fields_total_size, 2));
+
+            for (field in header.extra_fields.vals()) {
+                BitBuffer.addByte(bitbuffer, field.ids.0);
+                BitBuffer.addByte(bitbuffer, field.ids.1);
+
+                BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(field.data.size(), 2));
+                BitBuffer.addBytes(bitbuffer, field.data);
+            };
+        };
+
+        // - filename
+        switch (header.filename) {
+            case (?filename) {
+                let bytes = Text.encodeUtf8(filename);
+                BitBuffer.addBytes(bitbuffer, Blob.toArray(bytes));
+                BitBuffer.addByte(bitbuffer, 0);
+            };
+            case (_) {};
+        };
+
+        // - comment
+        switch (header.comment) {
+            case (?comment) {
+                let bytes = Text.encodeUtf8(comment);
+                BitBuffer.addBytes(bitbuffer, Blob.toArray(bytes));
+                BitBuffer.addByte(bitbuffer, 0);
+            };
+            case (_) {};
+        };
+
+        // - crc16
+        if (header.is_verified) {
+            let bytes = Iter.toArray(bitbuffer.bytes());
+
+            let crc32 = CRC32.checksum(bytes);
+            let crc16 = Nat32.toNat(crc32) % (2 ** 16);
+            
+            BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(crc16, 2));
+        };
+    };
 
     public func compressionLevelToByte(compression_level : CompressionLevel) : Nat8 {
         switch (compression_level) {

@@ -1,5 +1,6 @@
 import Buffer "mo:base/Buffer";
 import Order "mo:base/Order";
+import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import Result "mo:base/Result";
 import Nat "mo:base/Nat";
@@ -61,7 +62,7 @@ module {
         var prev_width = 0 : Nat;
 
         for ((symbol, bitwidth) in bitwidth_buffer.vals()) {
-            bits := bits * 2 ** (bitwidth - prev_width);
+            bits := bits * (2 ** (bitwidth - prev_width));
 
             let code : Code = { bitwidth; bits = Nat16.fromNat(bits) };
 

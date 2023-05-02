@@ -27,7 +27,7 @@ module {
     };
 
     public class Builder(max_bitwidth : Nat) : BuilderInterface<Decoder> {
-        let table_size = 1 * (2 ** max_bitwidth);
+        let table_size = (2 ** max_bitwidth);
         let table = Array.init<Nat>(table_size, MAX_BITWIDTH + 1);
 
         public func setMapping(symbol : Nat, code : Code) : Result<(), Text>{
@@ -39,7 +39,7 @@ module {
 
             let code_be = reverseCodeBits(code);
 
-            let possible_mappings = ( 1 * (2 ** (max_bitwidth - code.bitwidth)) ) - 1: Nat;
+            let possible_mappings = ( 2 ** (max_bitwidth - code.bitwidth) ) - 1: Nat;
 
             for (p in Iter.range(0, possible_mappings)) {
                 let padding = Nat16.fromNat(p);

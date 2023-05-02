@@ -93,7 +93,7 @@ module {
                 };
 
                 switch (symbol) {
-                    case (#end_of_block) break _loop;
+                    case (#EndOfBlock) break _loop;
                     case (#literal(literal)) lzss_decoder.decodeEntry(buffer, #literal(literal));
                     case (#pointer(back_ref)) lzss_decoder.decodeEntry(buffer, #pointer(back_ref));
                 };

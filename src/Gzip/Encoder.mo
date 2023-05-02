@@ -7,23 +7,24 @@ import Iter "mo:base/Iter";
 import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 import Text "mo:base/Text";
+import Debug "mo:base/Debug";
 import Time "mo:base/Time";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
-import CRC32 "mo:hash/CRC32";
+import CRC32 "../libs/CRC32";
 
 import Deflate "../Deflate";
 import Lzss "../LZSS";
 import Header "Header";
 
-import { nat_to_le_bytes } "../utils";
+import { nat_to_le_bytes; INSTRUCTION_LIMIT } "../utils";
 
 module {
     type Buffer<A> = Buffer.Buffer<A>;
     type BitBuffer = BitBuffer.BitBuffer;
     type Time = Time.Time;
 
-    type HeaderOptions = Header.HeaderOptions;
+    type Header = Header.Header;
     type DeflateOptions = Deflate.DeflateOptions;
 
     public type EncodedResponse = [Nat8];
@@ -34,165 +35,123 @@ module {
     };
 
     type GzipEncoderParams = {
-        header_options : HeaderOptions;
+        header : Header;
         deflate : DeflateEncoder;
     };
 
+    /// Configure the header and deflate options for a Gzip Encoder
     public class EncoderBuilder() = self {
-        var header_options : HeaderOptions = Header.defaultHeaderOptions();
+        var _header : Header = Header.defaultHeaderOptions();
 
         var deflate_options : DeflateOptions = {
             lzss = ?Lzss.Encoder(null);
-            block_size = 1024 * 1024;
+            block_size = INSTRUCTION_LIMIT;
             dynamic_huffman = false;
         };
 
-        public func header(options : HeaderOptions) : EncoderBuilder {
-            header_options := options;
+        /// Configure the header options for a Gzip Encoder
+        public func header(options : Header) : EncoderBuilder {
+            _header := options;
             self;
         };
 
         public func noCompression() : EncoderBuilder {
             deflate_options := { deflate_options with lzss = null };
-            header_options := {
-                header_options with compression_level = #Unknown
+            _header := {
+                _header with compression_level = #Unknown
             };
             self;
         };
 
-        public func lzss(encoder : Lzss.Encoder) : EncoderBuilder {
-            deflate_options := { deflate_options with lzss = ?encoder };
-            // let compression_level = lzss.compressionLevel(lzss);
-            // header_options := { header_options with compression_level = #Lzss };
+        /// Set the huffman encoding to dynamic
+        public func dynamicHuffman() : EncoderBuilder {
+            deflate_options := { deflate_options with dynamic_huffman = true };
             self;
         };
 
+        /// Set the huffman encoding to fixed
+        public func fixedHuffman() : EncoderBuilder {
+            deflate_options := { deflate_options with dynamic_huffman = false };
+            self;
+        };
+
+        /// Set the lzss encoder
+        public func lzss(lzss_encoder : Lzss.Encoder) : EncoderBuilder {
+            deflate_options := { deflate_options with lzss = ?lzss_encoder };
+            // let compression_level = lzss.compressionLevel(lzss);
+            // _header := { _header with compression_level = #Lzss };
+            self;
+        };
+
+        /// Set the block size for the encoder
         public func blockSize(size : Nat) : EncoderBuilder {
             deflate_options := { deflate_options with block_size = size };
             self;
         };
 
+        /// Returns the configured Gzip Encoder
         public func build() : Encoder {
-            Encoder(header_options, deflate_options);
+            Encoder(_header, deflate_options);
         };
     };
 
-    public func DefaultEncoder() : Encoder {
-        EncoderBuilder().build();
-    };
-
-    public class Encoder(header_options : HeaderOptions, deflate_options : DeflateOptions) {
+    /// Gzip Encoder
+    ///
+    /// ### Inputs
+    /// - `header` : [Header]() - the header options for the encoder
+    /// - `deflate_options` : [DeflateOptions]() - options for the deflate aglorithms
+    ///
+    public class Encoder(header : Header, deflate_options : DeflateOptions) {
         var input_size = 0;
         let crc32_builder = CRC32.CRC32();
-        let bitbuffer = BitBuffer.BitBuffer(8);
-
-        func encode_header() {
-            // Add Header bytes to the bitbuffer
-            // - magic header
-            BitBuffer.addByte(bitbuffer, 0x1f);
-            BitBuffer.addByte(bitbuffer, 0x8b);
-
-            // - compression method: deflate
-            BitBuffer.addByte(bitbuffer, 8);
-
-            // - flags
-            bitbuffer.addBit(header_options.is_text);
-            bitbuffer.addBit(header_options.is_verified);
-            bitbuffer.addBit(header_options.extra_fields.size() > 0);
-            bitbuffer.addBit(Option.isSome(header_options.filename));
-            bitbuffer.addBit(Option.isSome(header_options.comment));
-            bitbuffer.byteAlign();
-
-            // - modification time
-            let mtime = switch (header_options.modification_time) {
-                case (?t) { t };
-                case (_) { Time.now() / 10 ** 9 };
-            };
-
-            let mtime_nat = Int.abs(mtime);
-            BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(mtime_nat, 4));
-
-            // - compression method flags
-            let compression_level = Header.compressionLevelToByte(header_options.compression_level);
-            BitBuffer.addByte(bitbuffer, compression_level);
-
-            // - operating system
-            let os = Header.osToByte(header_options.os);
-            BitBuffer.addByte(bitbuffer, os);
-
-            // - extra fields
-            let extra_fields = header_options.extra_fields;
-
-            if (extra_fields.size() > 0) {
-                var fields_total_size = 0;
-
-                for ({ data } in header_options.extra_fields.vals()) {
-                    fields_total_size += (4 + data.size());
-                };
-
-                BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(fields_total_size, 2));
-
-                for (field in header_options.extra_fields.vals()) {
-                    BitBuffer.addByte(bitbuffer, field.ids.0);
-                    BitBuffer.addByte(bitbuffer, field.ids.1);
-
-                    BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(field.data.size(), 2));
-                    BitBuffer.addBytes(bitbuffer, field.data);
-                };
-            };
-
-            // - filename
-            switch (header_options.filename) {
-                case (?filename) {
-                    let bytes = Text.encodeUtf8(filename);
-                    BitBuffer.addBytes(bitbuffer, Blob.toArray(bytes));
-                    BitBuffer.addByte(bitbuffer, 0);
-                };
-                case (_) {};
-            };
-
-            // - comment
-            switch (header_options.comment) {
-                case (?comment) {
-                    let bytes = Text.encodeUtf8(comment);
-                    BitBuffer.addBytes(bitbuffer, Blob.toArray(bytes));
-                    BitBuffer.addByte(bitbuffer, 0);
-                };
-                case (_) {};
-            };
-
-            // - crc16
-            if (header_options.is_verified) {
-                let bytes = Iter.toArray(bitbuffer.bytes());
-
-                let crc32 = CRC32.checksum(bytes);
-                let crc16 = Nat32.toNat(crc32) % (2 ** 16);
-
-                BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(crc16, 2));
-            };
-        };
+        public let bitbuffer = BitBuffer.BitBuffer(8);
+        var is_header_encoded = false; // created for class re-use
 
         // Compression
         let deflate = Deflate.Encoder(bitbuffer, deflate_options);
 
+        /// Returns the block size for the encoder
+        public func block_size() : Nat {
+            deflate_options.block_size;
+        };
+        
+        /// Compresses a byte array and adds it to the internal buffer
         public func encode(bytes : [Nat8]) {
             input_size += bytes.size();
             crc32_builder.update(bytes);
 
-            if (bitbuffer.bitSize() == 0){
-                encode_header();
+            if (not is_header_encoded) {
+                is_header_encoded := true;
+                Header.encode(bitbuffer, header);
             };
 
             deflate.encode(bytes);
         };
 
+        /// Compresses text and adds it to the internal buffer
+        public func encodeText(text : Text) {
+            encode(Blob.toArray(Text.encodeUtf8(text)));
+        };
+
+        /// Compresses a Blob and adds it to the internal buffer
+        public func encodeBlob(blob : Blob) {
+            encode(Blob.toArray(blob));
+        };
+
+        /// Compresses data in a Buffer and adds it to the internal buffer
+        public func encodeBuffer(buffer : Buffer<Nat8>) {
+            encode(Buffer.toArray(buffer));
+        };
+
+        /// Clears the internal state of the encoder
         public func clear() {
             input_size := 0;
             crc32_builder.reset();
             bitbuffer.clear();
+            is_header_encoded := false;
         };
 
-        // Finish and add the Footer
+        /// Returns the compressed data as a byte array and clears the internal state
         public func finish() : [Nat8] {
             ignore deflate.finish();
 

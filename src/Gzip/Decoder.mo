@@ -23,7 +23,7 @@ import { nat_to_le_bytes; le_bytes_to_nat } "../utils";
 
 module {
     type Buffer<A> = Buffer.Buffer<A>;
-    type HeaderOptions = Header.HeaderOptions;
+    type Header = Header.Header;
     type DeflateOptions = Deflate.DeflateOptions;
 
     public type DecodedResponse = {
@@ -31,7 +31,7 @@ module {
         comment : Text;
         mtime : Time.Time;
         fields : [Header.ExtraField];
-        bytes : Buffer<Nat8>;
+        buffer : Buffer<Nat8>;
     };
 
     /// Gzip Decoder class
@@ -41,12 +41,12 @@ module {
         reader.hideTailBits(8 * 8);
 
         var buffer = Buffer.Buffer<Nat8>(8);
-        var header_options : ?HeaderOptions = null;
+        var opt_header : ?Header = null;
         let crc32_builder = CRC32.CRC32();
         var deflate_decoder = Deflate.Decoder(reader, ?buffer);
         var update_index = 0;
 
-        private func decode_header() : HeaderOptions {
+        private func decode_header() : Header {
 
             if (reader.readByte() != 0x1f or reader.readByte() != 0x8b) {
                 Debug.trap("Invalid gzip magic number in header");
@@ -140,14 +140,14 @@ module {
                 modification_time = ?mtime;
                 compression_level;
                 os;
-            } : HeaderOptions;
+            } : Header;
         };
 
         public func decode(bytes : [Nat8]) {
             reader.addBytes(bytes);
 
-            if (header_options == null) {
-                header_options := ?decode_header();
+            if (opt_header == null) {
+                opt_header := ?decode_header();
                 reader.clearRead();
             };
 
@@ -168,7 +168,7 @@ module {
 
         public func clear() {
 
-            header_options := null;
+            opt_header := null;
             update_index := 0;
 
             reader.clear();
@@ -211,14 +211,14 @@ module {
             let output_buffer = buffer;
 
             let opt = do ? {
-                let header = header_options!;
+                let header = opt_header!;
 
                 let response : DecodedResponse = {
                     filename = Option.get(header.filename, "");
                     comment = Option.get(header.comment, "");
                     mtime = header.modification_time!;
                     fields = header.extra_fields;
-                    bytes = output_buffer
+                    buffer = output_buffer
                 }
             };
 

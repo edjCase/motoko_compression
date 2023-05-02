@@ -1,8 +1,8 @@
 # Gzip/lib
 
-## Type `HeaderOptions`
+## Type `Header`
 ``` motoko no-repl
-type HeaderOptions = Header.HeaderOptions
+type Header = Header.Header
 ```
 
 
@@ -26,7 +26,7 @@ type EncoderBuilder = GzipEncoder.EncoderBuilder
 
 ## Value `Encoder`
 ``` motoko no-repl
-let Encoder : (Header.HeaderOptions, Deflate.DeflateOptions) -> GzipEncoder.Encoder
+let Encoder : (Header.Header, Deflate.DeflateOptions) -> GzipEncoder.Encoder
 ```
 
 
@@ -36,9 +36,9 @@ let EncoderBuilder : () -> GzipEncoder.EncoderBuilder
 ```
 
 
-## Value `DefaultEncoder`
+## Type `Decoder`
 ``` motoko no-repl
-let DefaultEncoder : () -> GzipEncoder.Encoder
+type Decoder = GzipDecoder.Decoder
 ```
 
 

@@ -39,6 +39,13 @@ module {
             Array.init<?Buffer<(Nat8, Nat)>>(LARGE_TABLE_SIZE, null)
         );
 
+        public func insert_triple(
+            (byte1, byte2, byte3) : (Nat8, Nat8, Nat8),
+            index : Nat
+        ) : ? Nat {
+            insert([byte1, byte2, byte3], 0, 3, index);
+        };
+
         /// Inserts a new prefix of 3 bytes into the table and returns the index of the previous match if it exists.
         public func insert(
             bytes : [Nat8],

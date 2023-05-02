@@ -1,10 +1,17 @@
 # BitReader
 
-## Class `BitReader<NatX>`
+## Class `BitReader`
 
 ``` motoko no-repl
-class BitReader<NatX>(natlib : NatLib<NatX>)
+class BitReader()
 ```
+
+
+### Function `peekBit`
+``` motoko no-repl
+func peekBit() : Bool
+```
+
 
 
 ### Function `readBit`
@@ -14,9 +21,30 @@ func readBit() : Bool
 
 
 
+### Function `peekBits`
+``` motoko no-repl
+func peekBits(n : Nat) : Nat
+```
+
+
+
+### Function `skipBits`
+``` motoko no-repl
+func skipBits(n : Nat)
+```
+
+
+
 ### Function `readBits`
 ``` motoko no-repl
-func readBits(n : Nat) : NatX
+func readBits(n : Nat) : Nat
+```
+
+
+
+### Function `peekByte`
+``` motoko no-repl
+func peekByte() : Nat8
 ```
 
 
@@ -24,6 +52,13 @@ func readBits(n : Nat) : NatX
 ### Function `readByte`
 ``` motoko no-repl
 func readByte() : Nat8
+```
+
+
+
+### Function `peekBytes`
+``` motoko no-repl
+func peekBytes(nbytes : Nat) : [Nat8]
 ```
 
 
@@ -56,6 +91,13 @@ func reset()
 
 
 
+### Function `clearRead`
+``` motoko no-repl
+func clearRead()
+```
+
+
+
 ### Function `clear`
 ``` motoko no-repl
 func clear()
@@ -63,16 +105,23 @@ func clear()
 
 
 
-### Function `size`
+### Function `bitSize`
 ``` motoko no-repl
-func size() : Nat
+func bitSize() : Nat
 ```
 
 
 
-### Function `sizeInBytes`
+### Function `byteSizeExact`
 ``` motoko no-repl
-func sizeInBytes() : Nat
+func byteSizeExact() : Nat
+```
+
+
+
+### Function `byteSize`
+``` motoko no-repl
+func byteSize() : Nat
 ```
 
 
@@ -90,8 +139,29 @@ func addBytes(bytes : [Nat8])
 ```
 
 
+
+### Function `hideTailBits`
+``` motoko no-repl
+func hideTailBits(n : Nat)
+```
+
+
+
+### Function `hiddenTailBits`
+``` motoko no-repl
+func hiddenTailBits() : Nat
+```
+
+
+
+### Function `showTailBits`
+``` motoko no-repl
+func showTailBits()
+```
+
+
 ## Function `fromBytes`
 ``` motoko no-repl
-func fromBytes<NatX>(natlib : NatLib<NatX>, bytes : [Nat8]) : BitReader<NatX>
+func fromBytes(bytes : [Nat8]) : BitReader
 ```
 

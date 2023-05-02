@@ -7,6 +7,13 @@ class PrefixTable()
 ```
 
 
+### Function `insert_triple`
+``` motoko no-repl
+func insert_triple(index : Nat) : ?Nat
+```
+
+
+
 ### Function `insert`
 ``` motoko no-repl
 func insert(bytes : [Nat8], start : Nat, len : Nat, index : Nat) : ?Nat

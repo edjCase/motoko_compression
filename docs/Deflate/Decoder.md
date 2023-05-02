@@ -9,13 +9,13 @@ class Decoder(bitreader : BitReader, output_buffer : ?Buffer.Buffer<Nat8>)
 
 ### Function `decode`
 ``` motoko no-repl
-func decode()
+func decode() : Result<(), Text>
 ```
 
 
 
 ### Function `finish`
 ``` motoko no-repl
-func finish()
+func finish() : Result<(), Text>
 ```
 

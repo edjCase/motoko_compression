@@ -2,7 +2,7 @@
 
 ## Type `Symbol`
 ``` motoko no-repl
-type Symbol = Common.LZSSEntry or {#end_of_block}
+type Symbol = Common.LzssEntry or {#EndOfBlock}
 ```
 
 
@@ -28,19 +28,46 @@ func distanceCode(symbol : Symbol) : ?(Nat, Nat, Nat16)
 ## Class `Encoder`
 
 ``` motoko no-repl
-class Encoder(literal_encoder : Huffman.Encoder, distance_encoder : Huffman.Encoder)
+class Encoder(literal_encoder : HuffmanEncoder.Encoder, distance_encoder : HuffmanEncoder.Encoder)
 ```
+
+
+### Value `literal`
+``` motoko no-repl
+let literal
+```
+
+
+
+### Value `distance`
+``` motoko no-repl
+let distance
+```
+
 
 
 ### Function `encode`
 ``` motoko no-repl
-func encode(bitbuffer : BitBuffer<Nat16>, symbol : Symbol)
+func encode(bitbuffer : BitBuffer, symbol : Symbol)
+```
+
+
+## Class `Decoder`
+
+``` motoko no-repl
+class Decoder(literal_decoder : HuffmanDecoder.Decoder, distance_decoder : HuffmanDecoder.Decoder)
+```
+
+
+### Function `decode`
+``` motoko no-repl
+func decode(reader : BitReader) : Result<Symbol, Text>
 ```
 
 
 ## Type `HuffmanCodec`
 ``` motoko no-repl
-type HuffmanCodec = { build : (Buffer<Symbol>) -> Result<Encoder, Text>; save : () -> () }
+type HuffmanCodec = { build : (Iter<Symbol>) -> Result<Encoder, Text>; save : (BitBuffer, Encoder) -> Result<(), Text>; load : (BitReader) -> Result<Decoder, Text> }
 ```
 
 
@@ -60,7 +87,14 @@ func build() : Result<Encoder, Text>
 
 ### Function `save`
 ``` motoko no-repl
-func save()
+func save() : Result<(), Text>
+```
+
+
+
+### Function `load`
+``` motoko no-repl
+func load(reader : BitReader) : Result<Decoder, Text>
 ```
 
 
@@ -73,13 +107,20 @@ class DynamicHuffmanCodec()
 
 ### Function `build`
 ``` motoko no-repl
-func build(symbols : Buffer<Symbol>) : Result<Encoder, Text>
+func build(symbols_iter : Iter<Symbol>) : Result<Encoder, Text>
 ```
 
 
 
 ### Function `save`
 ``` motoko no-repl
-func save()
+func save(bitbuffer : BitBuffer, codec : Encoder) : Result<(), Text>
+```
+
+
+
+### Function `load`
+``` motoko no-repl
+func load(reader : BitReader) : Result<Decoder, Text>
 ```
 

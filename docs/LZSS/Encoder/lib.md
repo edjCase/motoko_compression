@@ -2,7 +2,7 @@
 
 ## Type `Sink`
 ``` motoko no-repl
-type Sink = { consume : (entry : LZSSEntry) -> () }
+type Sink = { add : (entry : LzssEntry) -> () }
 ```
 
 
@@ -14,7 +14,7 @@ func Default() : Encoder
 
 ## Function `encode`
 ``` motoko no-repl
-func encode(blob : Blob) : Buffer<LZSSEntry>
+func encode(bytes : [Nat8]) : Buffer<LzssEntry>
 ```
 
 
@@ -46,6 +46,13 @@ func encodeBlob(blob : Blob, sink : Sink)
 
 
 
+### Function `encode_byte`
+``` motoko no-repl
+func encode_byte(future_byte : Nat8, sink : Sink)
+```
+
+
+
 ### Function `encode`
 ``` motoko no-repl
 func encode(bytes : [Nat8], sink : Sink)
@@ -53,8 +60,29 @@ func encode(bytes : [Nat8], sink : Sink)
 
 
 
+### Function `flush`
+``` motoko no-repl
+func flush(sink : Sink)
+```
+
+
+
+### Function `finish`
+``` motoko no-repl
+func finish(sink : Sink)
+```
+
+
+
 ### Function `clear`
 ``` motoko no-repl
 func clear()
+```
+
+
+
+### Function `encode_v1`
+``` motoko no-repl
+func encode_v1(bytes : [Nat8], sink : Sink)
 ```
 

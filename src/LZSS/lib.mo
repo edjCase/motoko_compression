@@ -7,9 +7,9 @@ import Common "Common";
 
 module {
     type Buffer<A> = Buffer.Buffer<A>;
-    public type LZSSEntry = Common.LZSSEntry;
+    public type LzssEntry = Common.LzssEntry;
 
-    public func encode(bytes: [Nat8]) : Buffer<LZSSEntry> = LZSSEncoder.encode(bytes);
+    public func encode(bytes: [Nat8]) : Buffer<LzssEntry> = LZSSEncoder.encode(bytes);
 
     public type Encoder = LZSSEncoder.Encoder;
     public let Encoder = LZSSEncoder.Encoder;

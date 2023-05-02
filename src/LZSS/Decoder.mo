@@ -10,9 +10,9 @@ import Option "mo:base/Option";
 
 module{
     type Buffer<A> = Buffer.Buffer<A>;
-    type LZSSEntry = Common.LZSSEntry;
+    type LzssEntry = Common.LzssEntry;
 
-    public func decode (lzss_buffer: Buffer<LZSSEntry>): Buffer<Nat8> {
+    public func decode (lzss_buffer: Buffer<LzssEntry>): Buffer<Nat8> {
         let buffer = Buffer.Buffer<Nat8>(8);
 
         for (entry in lzss_buffer.vals()) {
@@ -44,7 +44,7 @@ module{
 
     public class Decoder(){
         
-        public func decodeEntry(output_buffer: Buffer<Nat8>, entry: LZSSEntry) {
+        public func decodeEntry(output_buffer: Buffer<Nat8>, entry: LzssEntry) {
             switch(entry){
                 case(#literal(byte)){
                     output_buffer.add(byte);
@@ -68,13 +68,13 @@ module{
             };
         };
 
-        public func decodeIter(output_buffer: Buffer<Nat8>, lzss_iter: Iter.Iter<LZSSEntry>) {
+        public func decodeIter(output_buffer: Buffer<Nat8>, lzss_iter: Iter.Iter<LzssEntry>) {
             for (entry in lzss_iter) {
                 decodeEntry(output_buffer, entry);
             };
         };
 
-        public func decode (output_buffer: Buffer<Nat8>, lzss_buffer: Buffer<LZSSEntry>, ) {
+        public func decode (output_buffer: Buffer<Nat8>, lzss_buffer: Buffer<LzssEntry>, ) {
             for (entry in lzss_buffer.vals()) {
                 decodeEntry(output_buffer, entry);
             };

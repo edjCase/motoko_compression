@@ -4,9 +4,12 @@ import Debug "mo:base/Debug";
 import Nat8 "mo:base/Nat8";
 import Nat16 "mo:base/Nat16";
 import Iter "mo:base/Iter";
+import Nat "mo:base/Nat";
 import Result "mo:base/Result";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
+import Itertools "mo:itertools/Iter";
+import DeIter "mo:itertools/Deiter";
 
 import Common "../LZSS/Common";
 import Utils "../utils";
@@ -14,17 +17,18 @@ import HuffmanEncoder "../Huffman/Encoder";
 import HuffmanDecoder "../Huffman/Decoder";
 import BitReader "../BitReader";
 
-import { buffer_opt_last; send_err } "../utils";
+import { buffer_get_last; send_err } "../utils";
 
 module {
     type BitBuffer = BitBuffer.BitBuffer;
     type BitReader = BitReader.BitReader;
+    type Iter<A> = Iter.Iter<A>;
 
     type Buffer<A> = Buffer.Buffer<A>;
     type Result<A, B> = Result.Result<A, B>;
 
-    public type Symbol = Common.LZSSEntry or {
-        #end_of_block;
+    public type Symbol = Common.LzssEntry or {
+        #EndOfBlock;
     };
 
     let FIXED_LENGTH_CODES : [{
@@ -84,7 +88,7 @@ module {
     /// Encodes the literal and length Deflate Symbol to Nat16 and returns the extra bits
     public func lengthCode(symbol : Symbol) : (Nat16, Nat, Nat16) {
         switch symbol {
-            case (#end_of_block) { (256, 0, 0) };
+            case (#EndOfBlock) { (256, 0, 0) };
 
             case (#literal(byte)) { (Utils.nat8_to_16(byte), 0, 0) };
 
@@ -167,6 +171,9 @@ module {
     };
 
     public class Encoder(literal_encoder : HuffmanEncoder.Encoder, distance_encoder : HuffmanEncoder.Encoder) {
+
+        public let literal = literal_encoder;
+        public let distance = distance_encoder;
 
         public func encode(bitbuffer : BitBuffer, symbol : Symbol) {
 
@@ -285,7 +292,7 @@ module {
             let symbol = if (val >= 0 and val <= 255) {
                 #literal(Nat8.fromNat(val));
             } else if (val == 256) {
-                #end_of_block;
+                #EndOfBlock;
             } else if (val == 286 or val == 287) {
                 return #err(
                     "Invalid deflate symbol " # debug_show (val) # ". Values 286 and 287 should not be in the compressed bytes."
@@ -316,14 +323,14 @@ module {
     };
 
     public type HuffmanCodec = {
-        build : (Buffer<Symbol>) -> Result<Encoder, Text>;
-        save : () -> ();
+        build : (Iter<Symbol>) -> Result<Encoder, Text>;
+        save : (BitBuffer, Encoder) -> Result<(), Text>;
         load : (BitReader) -> Result<Decoder, Text>;
     };
 
     public class FixedHuffmanCodec() : HuffmanCodec {
 
-        public func build(_ : Buffer<Symbol>) : Result<Encoder, Text> {
+        public func build(_ : Iter<Symbol>) : Result<Encoder, Text> {
             let literal_builder = HuffmanEncoder.Builder(288);
 
             for (
@@ -367,7 +374,7 @@ module {
             #ok(Encoder(literal_encoder, distance_encoder));
         };
 
-        public func save() {};
+        public func save(_ : BitBuffer, _ : Encoder) : Result<(), Text> = #ok();
 
         public func load(reader : BitReader) : Result<Decoder, Text> {
             let literal_decoder = HuffmanDecoder.Builder(9);
@@ -412,18 +419,25 @@ module {
     };
 
     public class DynamicHuffmanCodec() : HuffmanCodec {
-        public func build(symbols : Buffer<Symbol>) : Result<Encoder, Text> {
-            let literal_freq = Array.init<Nat>(288, 0);
+        public func build(symbols_iter : Iter<Symbol>) : Result<Encoder, Text> {
+            let literal_freq = Array.init<Nat>(286, 0);
             let distance_freq = Array.init<Nat>(30, 0);
 
-            for (symbol in symbols.vals()) {
+            var empty_distance_table = true;
+
+            for (symbol in symbols_iter) {
                 let (marker, _, _) = lengthCode(symbol);
                 literal_freq[Nat16.toNat(marker)] += 1;
 
                 ignore do ? {
                     let (marker, _, _) = distanceCode(symbol)!;
                     distance_freq[marker] += 1;
+                    empty_distance_table := false;
                 };
+            };
+
+            if (empty_distance_table){
+                distance_freq[0] := 1;
             };
 
             let literal_result = HuffmanEncoder.fromFrequencies(Array.freeze(literal_freq), 15);
@@ -441,8 +455,174 @@ module {
             #ok(Encoder(literal_encoder, distance_encoder));
         };
 
-        public func save() {
+        public func save(bitbuffer : BitBuffer, codec : Encoder) : Result<(), Text> {
+            let literal_code_count = Nat.max(257, codec.literal.max_symbol() + 1);
+            let distance_code_count = Nat.max(1, codec.distance.max_symbol() + 1);
 
+            let codes = build_bitwidth_codes(codec, literal_code_count, distance_code_count);
+
+            let code_counts = Array.init<Nat>(19, 0);
+            
+            for (bit_code in codes.vals()){
+                code_counts[bit_code.symbol] += 1;
+            };
+
+
+
+            let #ok(bitwidth_encoder) = HuffmanEncoder.fromFrequencies(
+                Array.freeze(code_counts), 
+                7
+            ) else return #err("Failed to build bitwidth encoder");
+            
+            let iter = DeIter.reverse(
+                DeIter.range(0, BITWIDTH_CODE_ORDER.size())
+            );
+
+            var bitwidth_code_order_max = 0;
+            label for_loop for (i in iter){
+                let index = BITWIDTH_CODE_ORDER[i];
+                if (code_counts[index] > 0 and bitwidth_encoder.lookup(index).bitwidth > 0){
+                    bitwidth_code_order_max := i;
+                    break for_loop;
+                };
+            };
+
+            let bitwidth_code_count = Nat.max(4, bitwidth_code_order_max + 1);
+
+            bitbuffer.addBits(5, literal_code_count - 257);
+            bitbuffer.addBits(5, distance_code_count - 1);
+            bitbuffer.addBits(4, bitwidth_code_count - 4);
+
+            let code_order_iter = Itertools.take(
+                BITWIDTH_CODE_ORDER.vals(),
+                bitwidth_code_count
+            );
+
+
+            for (i in code_order_iter){
+                var bitwidth = 0;
+                if (code_counts[i] != 0) {
+                    bitwidth := bitwidth_encoder.lookup(i).bitwidth;
+                };
+
+                bitbuffer.addBits(3, bitwidth);
+            };
+            
+            for ({symbol; bitwidth; count} in codes.vals()) {
+                bitwidth_encoder.encode(bitbuffer, symbol);
+
+                if (bitwidth > 0) {
+                    bitbuffer.addBits(bitwidth, count);
+                };
+            };
+
+            #ok();
+        };
+
+        type BitwidthCode = {
+            symbol : Nat;
+            count : Nat;
+            bitwidth : Nat;
+        };
+
+        func build_bitwidth_codes(
+            codec : Encoder,
+            literal_code_count : Nat,
+            distance_code_count : Nat,
+        ) : Buffer.Buffer<BitwidthCode> {
+
+            type RunLength = {
+                value : Nat;
+                var count : Nat;
+            };
+
+            func rle(
+                buffer : Buffer<RunLength>,
+                huffman_encoder : HuffmanEncoder.Encoder,
+                code_count : Nat,
+            ) {
+
+                for (symbol in Itertools.range(0, code_count)) {
+                    let bitwidth = huffman_encoder.lookup(symbol).bitwidth;
+
+                    let has_same_value = switch (buffer_get_last(buffer)) {
+                        case (?elem) elem.value == bitwidth;
+                        case (_) false;
+                    };
+
+                    if (has_same_value) {
+                        Buffer.last(buffer).count += 1;
+                    } else {
+                        let elem = {
+                            value = bitwidth;
+                            var count = 1;
+                        };
+
+                        buffer.add(elem);
+                    };
+                };
+            };
+
+            let run_len_buffer = Buffer.Buffer<RunLength>(8);
+            rle(run_len_buffer, codec.literal, literal_code_count);
+            rle(run_len_buffer, codec.distance, distance_code_count);
+
+
+            let codes = Buffer.Buffer<BitwidthCode>(8);
+            let bit_code = {
+                symbol = 0;
+                count = 0;
+                bitwidth = 0;
+            };
+
+            for (elem in run_len_buffer.vals()) {
+                if (elem.value != 0) {
+                    codes.add({ bit_code with symbol = elem.value });
+
+                    elem.count -= 1;
+
+                    while (elem.count >= 3) {
+                        let n = Nat.min(6, elem.count);
+                        codes.add({
+                            symbol = 16;
+                            count = n - 3;
+                            bitwidth = 2;
+                        });
+
+                        elem.count -= n;
+                    };
+
+                    for (_ in Itertools.range(0, elem.count)) {
+                        codes.add({ bit_code with symbol = elem.value });
+                    };
+                } else {
+                    while (elem.count >= 11) {
+                        let n = Nat.min(138, elem.count);
+                        codes.add({
+                            symbol = 18;
+                            count = n - 11;
+                            bitwidth = 7;
+                        });
+
+                        elem.count -= n;
+                    };
+
+                    if (elem.count >= 3) {
+                        codes.add({
+                            symbol = 17;
+                            count = elem.count - 3;
+                            bitwidth = 3;
+                        });
+                    } else {
+                        for (_ in Itertools.range(0, elem.count)) {
+                            codes.add(bit_code);
+                        };
+                    };
+                };
+            };
+
+
+            codes;
         };
 
         let MAX_DISTANCE_CODE_COUNT = 30;
@@ -453,7 +633,7 @@ module {
                     let cnt = reader.readBits(2) + 3;
 
                     let last = switch (last_opt) {
-                        case (null) return #err("Invalid data: No previous value to repeat");
+                        case (null) return #err("Invalid data: No previous value to count");
                         case (?last_item) last_item;
                     };
 
@@ -499,7 +679,7 @@ module {
 
             let bitwidths = Array.freeze(_bitwidths);
 
-            let bitwidth_decoder = switch(HuffmanDecoder.fromBitwidths(bitwidths) ) {
+            let bitwidth_decoder = switch (HuffmanDecoder.fromBitwidths(bitwidths)) {
                 case (#ok(decoder)) decoder;
                 case (#err(msg)) return #err(msg);
             };
@@ -510,8 +690,8 @@ module {
             while (bitwidths_buffer.size() < literal_code_count) {
                 let code_res = bitwidth_decoder.decode(reader);
                 let #ok(code) = code_res else return send_err(code_res);
-                
-                let last = buffer_opt_last(bitwidths_buffer);
+
+                let last = buffer_get_last(bitwidths_buffer);
                 let res = loadBitwidths(reader, bitwidths_buffer, code, last);
 
                 switch (res) {
@@ -524,12 +704,12 @@ module {
 
             while (distance_bitwidths.size() < distance_code_count) {
 
-                let code = switch(bitwidth_decoder.decode(reader)){
+                let code = switch (bitwidth_decoder.decode(reader)) {
                     case (#ok(code)) code;
                     case (#err(msg)) return #err(msg);
                 };
 
-                let last = switch (buffer_opt_last(distance_bitwidths)) {
+                let last = switch (buffer_get_last(distance_bitwidths)) {
                     case (null) literal_bitwidths.getOpt(literal_bitwidths.size() - 1);
                     case (item) item;
                 };

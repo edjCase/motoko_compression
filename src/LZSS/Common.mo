@@ -6,7 +6,7 @@ module {
     type Buffer<A> = Buffer.Buffer<A>;
 
     /// An entry in the compression table
-    public type LZSSEntry = {
+    public type LzssEntry = {
         /// represents a single byte that wasn't matched
         #literal : Nat8;
 

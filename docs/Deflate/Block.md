@@ -8,7 +8,7 @@ let NO_COMPRESSION_MAX_BLOCK_SIZE
 
 ## Type `BlockType`
 ``` motoko no-repl
-type BlockType = {#Raw; #Fixed; #Dynamic}
+type BlockType = {#Raw; #Fixed : { lzss : Lzss.Encoder; block_limit : Nat }; #Dynamic : { lzss : Lzss.Encoder; block_limit : Nat }}
 ```
 
 
@@ -26,13 +26,13 @@ func natToBlock(byte : Nat) : BlockType
 
 ## Type `BlockInterface`
 ``` motoko no-repl
-type BlockInterface = { size : () -> Nat; append : ([Nat8]) -> (); flush : (BitBuffer<Nat16>) -> () }
+type BlockInterface = { size : () -> Nat; append : ([Nat8]) -> (); add : (Nat8) -> (); flush : (BitBuffer) -> (); clear : () -> () }
 ```
 
 
 ## Function `Block`
 ``` motoko no-repl
-func Block(block_type : BlockType, opt_lzss : ?Lzss.Encoder) : BlockInterface
+func Block(block_type : BlockType) : BlockInterface
 ```
 
 
@@ -50,6 +50,13 @@ func size() : Nat
 
 
 
+### Function `add`
+``` motoko no-repl
+func add(byte : Nat8)
+```
+
+
+
 ### Function `append`
 ``` motoko no-repl
 func append(bytes : [Nat8])
@@ -59,14 +66,21 @@ func append(bytes : [Nat8])
 
 ### Function `flush`
 ``` motoko no-repl
-func flush(bitbuffer : BitBuffer<Nat16>)
+func flush(bitbuffer : BitBuffer)
+```
+
+
+
+### Function `clear`
+``` motoko no-repl
+func clear()
 ```
 
 
 ## Class `Compress`
 
 ``` motoko no-repl
-class Compress(lzss : Lzss.Encoder, huffman : Symbol.FixedHuffmanCodec)
+class Compress(lzss : Lzss.Encoder, huffman : Symbol.HuffmanCodec, limit : Nat)
 ```
 
 
@@ -77,6 +91,13 @@ func size() : Nat
 
 
 
+### Function `add`
+``` motoko no-repl
+func add(byte : Nat8) : ()
+```
+
+
+
 ### Function `append`
 ``` motoko no-repl
 func append(bytes : [Nat8])
@@ -84,8 +105,15 @@ func append(bytes : [Nat8])
 
 
 
+### Function `clear`
+``` motoko no-repl
+func clear()
+```
+
+
+
 ### Function `flush`
 ``` motoko no-repl
-func flush(bitbuffer : BitBuffer<Nat16>)
+func flush(bitbuffer : BitBuffer)
 ```
 

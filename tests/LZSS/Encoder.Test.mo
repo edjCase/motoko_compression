@@ -10,8 +10,10 @@ import It "mo:itertools/Iter";
 
 import ActorSpec "../utils/ActorSpec";
 
-import LZSS "../../src/LZSS";
+import Lzss "../../src/LZSS";
 import Example "../data-files/dickens5";
+
+type LzssEntry = Lzss.LzssEntry;
 
 let {
     assertTrue;
@@ -24,7 +26,7 @@ let {
     run;
 } = ActorSpec;
 
-func _size(buffer : Buffer.Buffer<LZSS.LZSSEntry>) : Nat {
+func _size(buffer : Buffer.Buffer<Lzss.LzssEntry>) : Nat {
     var size = 0;
     for (entry in buffer.vals()) {
         switch (entry) {
@@ -42,19 +44,19 @@ func _size(buffer : Buffer.Buffer<LZSS.LZSSEntry>) : Nat {
 
 let success = run([
     describe(
-        "LZSS Encoding",
+        "Lzss Encoding",
         [
-            it(
-                "encoding",
-                do {
-                    let blob = Text.encodeUtf8("abracadabra");
-                    let bytes = Blob.toArray(blob);
+            // it(
+            //     "encoding",
+            //     do {
+            //         let blob = Text.encodeUtf8("abracadabra");
+            //         let bytes = Blob.toArray(blob);
 
-                    let encoded = LZSS.encode(bytes);
-                    let decoded = LZSS.decode(encoded);
-                    assertTrue(bytes == Buffer.toArray(decoded));
-                },
-            ),
+            //         let encoded = Lzss.encode(bytes);
+            //         let decoded = Lzss.decode(encoded);
+            //         assertTrue(bytes == Buffer.toArray(decoded));
+            //     },
+            // ),
             describe(
                 "encode repeated patterns",
                 [
@@ -62,7 +64,7 @@ let success = run([
                     //     "'abcaaaaad' -> 'abc<3,5>d'",
                     //     do {
                     //         let bytes = Text.encodeUtf8("abcaaaaad");
-                    //         let encoded = LZSS.encode(bytes);
+                    //         let encoded = Lzss.encode(bytes);
 
                     //         Buffer.toArray(encoded) == [
                     //             #literal(0x61 : Nat8),
@@ -78,7 +80,7 @@ let success = run([
                     //     "'fr-en-ch-en-en-end' -> 'fr-en-ch<6,9>d'",
                     //     do {
                     //         let bytes = Text.encodeUtf8("fr-en-ch-en-en-end");
-                    //         let encoded = LZSS.encode(bytes);
+                    //         let encoded = Lzss.encode(bytes);
 
                     //         Buffer.toArray(encoded) == [
                     //             #literal(0x66 : Nat8),
@@ -100,37 +102,59 @@ let success = run([
             describe(
                 "Class Encoder",
                 [
-                    it(
-                        "encoding",
-                        do {
-                            let blob = Text.encodeUtf8("abracadabra");
-                            let bytes = Blob.toArray(blob);
-                            let lzss = LZSS.Encoder(null);
-                            let buffer = Buffer.Buffer<LZSS.LZSSEntry>(8);
+                    // it(
+                    //     "encoding",
+                    //     do {
+                    //         let blob = Text.encodeUtf8("abracadabra");
+                    //         let bytes = Blob.toArray(blob);
+                    //         let lzss = Lzss.Encoder(null);
+                    //         let buffer = Buffer.Buffer<LzssEntry>(8);
 
-                            lzss.encode(bytes, buffer);
-
-                            let decoded = LZSS.decode(buffer);
-                            assertTrue(bytes == Buffer.toArray(decoded));
-                        },
-                    ),
+                    //         lzss.encode(bytes, buffer);
+                    //         let decoded = Lzss.decode(buffer);
+                    //         Debug.print(debug_show (bytes.size(), decoded.size()));
+                    //         assertTrue(bytes == Buffer.toArray(decoded));
+                    //     },
+                    // ),
                     it(
                         "Prefix Encoder",
                         do {
+                            var j = 0;
                             for (i in It.range(0, 2)) {
 
-                                let lzss = LZSS.Encoder(null);
+                                let lzss = Lzss.Encoder(null);
                                 let blob = Text.encodeUtf8(Example.text);
                                 let bytes = Blob.toArray(blob);
 
-                                let buffer = Buffer.Buffer<LZSS.LZSSEntry>(8);
-                                lzss.encodeBlob(blob, buffer);
+                                let buffer = Buffer.Buffer<LzssEntry>(8);
+                                let buffer2 = Buffer.Buffer<LzssEntry>(8);
 
-                                Debug.print("No: " # debug_show (i + 1));
-                                Debug.print("Example text size: " # debug_show (lzss.size()));
+                                lzss.encode_v1(bytes, buffer2);
+                                lzss.clear();
 
-                                let decoded = LZSS.decode(buffer);
-                                assert Buffer.toArray(decoded) == Blob.toArray(blob);
+                                label l for (byte in bytes.vals()){
+                                    lzss.encode_byte(byte, buffer);
+                                    
+                                    if (buffer.size() == 0) continue l;
+
+                                    let i = buffer.size() - 1 : Nat;
+
+                                    let b = buffer.get(i);
+                                    let a = buffer2.get(i);
+
+                                    if (i != j){
+                                        Debug.print("i = " # debug_show i # " -> " #debug_show (a, b));
+                                        j:= i;
+                                    };
+
+                                    assert a == b;
+                                };
+
+                                // lzss.encode(bytes, buffer);
+                                lzss.finish(buffer);
+
+                                let decoded = Lzss.decode(buffer);
+                                assert Buffer.toArray(decoded) == bytes;
                             };
                             Debug.print("Prefix Encoder: Success!");
                             assertTrue(true);

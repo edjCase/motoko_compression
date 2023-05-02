@@ -1,5 +1,23 @@
 # utils
 
+## Value `INSTRUCTION_LIMIT`
+``` motoko no-repl
+let INSTRUCTION_LIMIT
+```
+
+
+## Function `buffer_get_last`
+``` motoko no-repl
+func buffer_get_last<A>(buffer : Buffer<A>) : ?A
+```
+
+
+## Function `send_err`
+``` motoko no-repl
+func send_err<A, B, Err>(a : Result<A, Err>) : Result<B, Err>
+```
+
+
 ## Function `nat_to_le_bytes`
 ``` motoko no-repl
 func nat_to_le_bytes(num : Nat, nbytes : Nat) : [Nat8]

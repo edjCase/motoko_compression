@@ -9,6 +9,7 @@ import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 import Result "mo:base/Result";
 import Prelude "mo:base/Prelude";
+import Order "mo:base/Order";
 
 import Deiter "mo:itertools/Deiter";
 import Itertools "mo:itertools/Iter";
@@ -20,8 +21,9 @@ module {
     type Result<A, B> = Result.Result<A, B>;
     type Hash = Hash.Hash;
     type List<A> = List.List<A>;
-    
-    public func buffer_opt_last<A>(buffer: Buffer<A>): ?A{
+
+    public let INSTRUCTION_LIMIT = 1048576;
+    public func buffer_get_last<A>(buffer: Buffer<A>): ?A{
         if (buffer.size() == 0) {
             null
         } else {

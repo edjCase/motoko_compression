@@ -1,10 +1,31 @@
 {
     "version": 1,
-    "dfx": "0.13.1",
+    "dfx": "0.14.0",
     "canisters": {
         "test": {
             "type": "motoko",
-            "main": "tests/Actor.mo"
+            "main": "tests/Actor.mo",
+            "args" : "--generational-gc"
+        },
+        "user" : {
+            "type": "motoko",
+            "main": "example/user.mo",
+            "args" : "--generational-gc"
+        },
+        "encode" : {
+            "type": "motoko",
+            "main": "example/encode.mo",
+            "args" : "--generational-gc"
+        },
+        "async-encode" : {
+            "type": "motoko",
+            "main": "example/async-encode.mo",
+            "args" : "--generational-gc"
+        },
+        "gzip-canister" : {
+            "type": "motoko",
+            "main": "example/gzip-canister.mo",
+            "args" : "--generational-gc"
         }
     },
     "defaults": {

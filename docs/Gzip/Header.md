@@ -18,9 +18,21 @@ type Os = {#FatFs; #Amiga; #Vms; #Unix; #VmCms; #AtariTos; #Hpfs; #Macintosh; #Z
 ```
 
 
-## Type `HeaderOptions`
+## Type `Header`
 ``` motoko no-repl
-type HeaderOptions = { is_text : Bool; is_verified : Bool; extra_fields : [ExtraField]; filename : ?Text; comment : ?Text; modification_time : ?Time; compression_level : CompressionLevel; os : Os }
+type Header = { is_text : Bool; is_verified : Bool; extra_fields : [ExtraField]; filename : ?Text; comment : ?Text; modification_time : ?Time; compression_level : CompressionLevel; os : Os }
+```
+
+
+## Function `defaultHeaderOptions`
+``` motoko no-repl
+func defaultHeaderOptions() : Header
+```
+
+
+## Function `encode`
+``` motoko no-repl
+func encode(bitbuffer : BitBuffer, header : Header)
 ```
 
 

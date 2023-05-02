@@ -1,8 +1,8 @@
 # LZSS/Common
 
-## Type `LZSSEntry`
+## Type `LzssEntry`
 ``` motoko no-repl
-type LZSSEntry = {#literal : Nat8; #pointer : (Nat, Nat)}
+type LzssEntry = {#literal : Nat8; #pointer : (Nat, Nat)}
 ```
 
 An entry in the compression table

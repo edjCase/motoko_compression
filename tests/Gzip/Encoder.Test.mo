@@ -5,6 +5,7 @@ import Blob "mo:base/Blob";
 
 import ActorSpec "../utils/ActorSpec";
 import Gzip "../../src/Gzip";
+import GzipEncoder "../../src/Gzip/Encoder";
 import Example "../data-files/dickens5";
 
 let {
@@ -41,7 +42,7 @@ let success = run([
                 it(
                     "Compress \"Hello world\" (no back references)",
                     do {
-                        let gzip_encoder = Gzip.DefaultEncoder();
+                        let gzip_encoder = Gzip.EncoderBuilder().build();
                         let input = Text.encodeUtf8("Hello World");
                         let bytes = Blob.toArray(input);
 
@@ -54,7 +55,7 @@ let success = run([
                 it(
                     "Compress short text",
                     do {
-                        let gzip_encoder = Gzip.DefaultEncoder();
+                        let gzip_encoder = Gzip.EncoderBuilder().build();
                         let text = "Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.";
                         let input = Text.encodeUtf8(text);
                         let bytes = Blob.toArray(input);
@@ -66,7 +67,7 @@ let success = run([
                     },
                 ),
                 it("Compression of large files with Fixed Huffman codes", do{
-                    let gzip_encoder = Gzip.DefaultEncoder();
+                    let gzip_encoder = Gzip.EncoderBuilder().build();
                     let input = Text.encodeUtf8(Example.text);
                     let bytes = Blob.toArray(input);
 
@@ -79,6 +80,26 @@ let success = run([
                     );
                 })
             ]),
+
+            describe("Compression: Dynamic Huffman codes", [
+                it("Compress short text", do {
+                    
+                    let gzip_encoder = GzipEncoder
+                        .EncoderBuilder()
+                        .dynamicHuffman()
+                        .build();
+
+                    let text = "Literature is full of repetition. Literary writers constantly use the literary device of repeated words. I think the only type of repetition which is bad is sloppy repetition. Repetition which is unintentional, which sounds awkward.";
+                    let input = Text.encodeUtf8(text);
+                    let bytes = Blob.toArray(input);
+
+                    gzip_encoder.encode(bytes);
+                    let output = gzip_encoder.finish();
+                    Debug.print("short text example: " # debug_show (text.size()) # " -> " # debug_show output.size() # " bytes");
+                    Debug.print(debug_show output);
+                    true
+                })
+            ])
         ],
     )
 ]);
