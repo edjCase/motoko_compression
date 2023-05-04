@@ -13,7 +13,6 @@ import BitBuffer "mo:bitbuffer/BitBuffer";
 
 import { nat_to_le_bytes; INSTRUCTION_LIMIT } "../utils";
 
-
 module Header {
     type BitBuffer = BitBuffer.BitBuffer;
     type Buffer<A> = Buffer.Buffer<A>;

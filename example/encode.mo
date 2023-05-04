@@ -34,7 +34,7 @@ actor {
         let data = get_data();
         let input = Blob.fromArray(data);
 
-        let gzip_encoder = GzipEncoder.EncoderBuilder().build();
+        let gzip_encoder = GzipEncoder.EncoderBuilder().dynamicHuffman().build();
         gzip_encoder.encode(data);
         let output = gzip_encoder.finish();
         Debug.print("Example: " # debug_show (data.size()) # " -> " # debug_show output.size() # " bytes");

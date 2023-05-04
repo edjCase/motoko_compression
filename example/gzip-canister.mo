@@ -22,6 +22,17 @@ shared (install) actor class GzipCanister() = gzip_canister {
     type GzipAsyncEncoder = GzipAsyncEncoder.AsyncEncoder;
     type BitBuffer = BitBuffer.BitBuffer;
 
+    public type StartTaskResponse = {
+        id : Nat;
+        block_size : Nat;
+        total_chunks : Nat;
+    };
+
+    public type ErrorResponse = {
+        block_size : Nat;
+        expected_chunk : Nat;
+    };
+
     type GzipDetails = {
         encoder : Gzip.Encoder;
         size : Nat;
@@ -29,34 +40,20 @@ shared (install) actor class GzipCanister() = gzip_canister {
         total_chunks : Nat;
     };
 
-    public type Response = {
-        block_size : Nat;
-        expected_chunk: Nat;
-    };
-
-    public type StartTaskResponse = {
-        id : Nat;
-        block_size : Nat;
-        total_chunks : Nat;
-    };
-
     let map = TrieMap.TrieMap<Nat, GzipDetails>(Nat.equal, Nat32.fromNat);
     var task_id = 0;
 
-    func div_ceil(a: Nat, b: Nat): Nat {
-        (a + b - 1) / b
+    func div_ceil(a : Nat, b : Nat) : Nat {
+        (a + b - 1) / b;
     };
 
-    public func start_task(size: Nat): async Result<StartTaskResponse, ()> {
+    public func start_task(size : Nat) : async Result<StartTaskResponse, ()> {
         Debug.print("creating task to compress size = " # debug_show size);
 
         let id = task_id;
         task_id += 1;
 
-        let encoder = Gzip
-            .EncoderBuilder()
-            .blockSize(500_000)
-            .build();
+        let encoder = Gzip.EncoderBuilder().blockSize(100_000).build();
 
         let gzip_details = {
             encoder;
@@ -78,31 +75,27 @@ shared (install) actor class GzipCanister() = gzip_canister {
         #ok(res);
     };
 
-    type Status = {
-        #in_progress : Nat;
-        #done : Nat;
-    };
-
-    func bitbuffer_to_bytes(bitbuffer: BitBuffer): [Nat8] {
+    func bitbuffer_to_bytes(bitbuffer : BitBuffer) : [Nat8] {
         let nbytes = bitbuffer.bitSize() / 8;
-        Debug.print("taking nbytes = " # debug_show nbytes );
+        Debug.print("taking nbytes = " # debug_show nbytes);
 
         let res = Array.tabulate(
             nbytes,
-            func(i: Nat): Nat8{
+            func(i : Nat) : Nat8 {
                 let byte = BitBuffer.getByte(bitbuffer, 0);
                 BitBuffer.dropByte(bitbuffer);
                 byte;
-            }
+            },
         );
 
         Debug.print("finished bitbuffer_to_bytes");
-        res
+        res;
     };
 
-    public func compress(id: Nat, data: [Nat8]) : async Result<[Nat8], ?Response> {
+    public func compress(id : Nat, data : [Nat8]) : async Result<[Nat8], ?ErrorResponse> {
         let ?details = map.get(id) else return #err(null);
-        let {encoder; size; total_chunks} = details;
+        let { encoder; size; total_chunks } = details;
+        Debug.print("bytes received = " # debug_show data.size());
 
         if (data.size() > encoder.block_size()) {
             let res = {
@@ -117,8 +110,8 @@ shared (install) actor class GzipCanister() = gzip_canister {
 
         details.current_chunk += 1;
 
-        if (details.current_chunk == total_chunks){
-            let bytes =  encoder.finish();
+        if (details.current_chunk == total_chunks) {
+            let bytes = encoder.finish();
             map.delete(id);
             return #ok(bytes);
         };
