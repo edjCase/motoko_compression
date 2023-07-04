@@ -139,7 +139,7 @@ module {
 
     public class Compress(lzss : Lzss.Encoder, huffman : Symbol.HuffmanCodec, limit: Nat) {
         var input_size = 0;
-        let compressed_symbols = Buffer.Buffer<Symbol>(8);
+        var compressed_symbols = Buffer.Buffer<Symbol>(8);
         let sink = {
             add = func  (symbol: Lzss.LzssEntry) {
                 compressed_symbols.add(symbol);
@@ -160,7 +160,7 @@ module {
             lzss.encode(bytes, sink);
         };
 
-        func clean(){
+        func refresh(){
             input_size := 0;
             compressed_symbols.clear();
         };
@@ -191,10 +191,9 @@ module {
                 symbol_encoder.encode(bitbuffer, symbol);
             };
 
-
             symbol_encoder.encode(bitbuffer, #EndOfBlock);
 
-            clear();
+            refresh();
         };
 
     };

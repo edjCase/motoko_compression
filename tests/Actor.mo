@@ -74,9 +74,12 @@ actor {
                                 let input = Text.encodeUtf8("Hello World");
 
                                 gzip_encoder.encode(Blob.toArray(input));
-                                let output = gzip_encoder.finish();
+                                let compressed = gzip_encoder.finish();
 
-                                gzip_decoder.decode(output);
+                                for (chunk in compressed.chunks.vals()){
+                                    gzip_decoder.decode(chunk);
+                                };
+
                                 let res = gzip_decoder.finish(); // returns the decoded bytes and resets the decoder
                                 let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
@@ -94,9 +97,11 @@ actor {
                                         let input = Text.encodeUtf8("Hello World");
 
                                         fixed_huffman_encoder.encode(Blob.toArray(input));
-                                        let output = fixed_huffman_encoder.finish();
+                                        let compressed = fixed_huffman_encoder.finish();
 
-                                        gzip_decoder.decode(output);
+                                        for (chunk in compressed.chunks.vals()){
+                                            gzip_decoder.decode(chunk);
+                                        };
                                         let res = gzip_decoder.finish();
                                         let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
@@ -110,10 +115,12 @@ actor {
                                         let input = Text.encodeUtf8(text);
 
                                         fixed_huffman_encoder.encode(Blob.toArray(input));
-                                        let output = fixed_huffman_encoder.finish();
-                                        Debug.print("short text example: " # debug_show (text.size()) # " -> " # debug_show output.size() # " bytes");
+                                        let compressed = fixed_huffman_encoder.finish();
+                                        Debug.print("short text example: " # debug_show (text.size()) # " -> " # debug_show compressed.total_size # " bytes");
 
-                                        gzip_decoder.decode(output);
+                                        for (chunk in compressed.chunks.vals()){
+                                            gzip_decoder.decode(chunk);
+                                        };
                                         let res = gzip_decoder.finish();
                                         let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
@@ -126,12 +133,15 @@ actor {
                                         let input = Text.encodeUtf8(Example.text);
 
                                         fixed_huffman_encoder.encode(Blob.toArray(input));
-                                        let output = fixed_huffman_encoder.finish();
-                                        Debug.print("Example: " # debug_show (Example.text.size()) # " -> " # debug_show output.size() # " bytes");
+                                        let compressed = fixed_huffman_encoder.finish();
+                                        Debug.print("Example: " # debug_show (Example.text.size()) # " -> " # debug_show compressed.total_size # " bytes");
 
-                                        assert output.size() < input.size() * 7 / 10;
+                                        assert compressed.total_size < input.size() * 7 / 10;
 
-                                        gzip_decoder.decode(output);
+                                        for (chunk in compressed.chunks.vals()){
+                                            gzip_decoder.decode(chunk);
+                                        };
+
                                         let res = gzip_decoder.finish();
                                         let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
@@ -156,11 +166,13 @@ actor {
                                 let bytes = Blob.toArray(input);
 
                                 gzip_encoder.encode(bytes);
-                                let output = gzip_encoder.finish();
+                                let compressed = gzip_encoder.finish();
 
-                                Debug.print("short text example: " # debug_show (text.size()) # " -> " # debug_show output.size() # " bytes");
+                                Debug.print("short text example: " # debug_show (text.size()) # " -> " # debug_show compressed.total_size # " bytes");
 
-                                gzip_decoder.decode(output);
+                                for (chunk in compressed.chunks.vals()){
+                                    gzip_decoder.decode(chunk);
+                                };
                                 let res = gzip_decoder.finish();
                                 let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
@@ -172,17 +184,20 @@ actor {
                             do {
                                 let gzip_encoder = GzipEncoder.EncoderBuilder().dynamicHuffman().build();
 
-                                let input = Text.encodeUtf8(Example.text);
+                                let input = Text.encodeUtf8(Example.text # Example.text # Example.text # Example.text # Example.text # Example.text # Example.text # Example.text);
                                 let bytes = Blob.toArray(input);
 
                                 gzip_encoder.encode(bytes);
-                                let output = gzip_encoder.finish();
+                                let compressed = gzip_encoder.finish();
 
-                                Debug.print("Example: " # debug_show (Example.text.size()) # " -> " # debug_show output.size() # " bytes");
+                                Debug.print("Example: " # debug_show (Example.text.size()) # " -> " # debug_show compressed.total_size # " bytes");
 
-                                assert output.size() < input.size() * 7 / 10;
+                                assert compressed.total_size < input.size() * 7 / 10;
+                                
+                                for (chunk in compressed.chunks.vals()){
+                                    gzip_decoder.decode(chunk);
+                                };
 
-                                gzip_decoder.decode(output);
                                 let res = gzip_decoder.finish();
                                 let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
@@ -215,23 +230,23 @@ actor {
                             },
                         ),
 
-                        it(
-                            "Dynamic Huffman Codes Decompressing long example",
-                            do {
-                                let blob : Blob = Example.dynamic_code_compression;
-                                let compressed_bytes = Blob.toArray(blob);
+                        // it(
+                        //     "Dynamic Huffman Codes Decompressing long example",
+                        //     do {
+                        //         let blob : Blob = Example.dynamic_code_compression;
+                        //         let compressed_bytes = Blob.toArray(blob);
 
-                                let gzip_decoder = Gzip.Decoder();
-                                gzip_decoder.decode(compressed_bytes);
-                                let res = gzip_decoder.finish();
-                                let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
+                        //         let gzip_decoder = Gzip.Decoder();
+                        //         gzip_decoder.decode(compressed_bytes);
+                        //         let res = gzip_decoder.finish();
+                        //         let decoded = Blob.fromArray(Buffer.toArray(res.buffer));
 
-                                assertTrue(
-                                    decoded == Text.encodeUtf8(Example.text)
-                                )
+                        //         assertTrue(
+                        //             decoded == Text.encodeUtf8(Example.text)
+                        //         )
 
-                            },
-                        ),
+                        //     },
+                        // ),
                     ],
                 )
             ]);

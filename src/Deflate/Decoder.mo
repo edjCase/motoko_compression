@@ -103,7 +103,7 @@ module {
         };
 
         public func finish() : Result<(), Text> {
-            if (bitreader.bitSize() > 0) {
+            if (bitreader.bitSize() > (8 * 8)) {
                 let res = decode();
 
                 switch (res) {

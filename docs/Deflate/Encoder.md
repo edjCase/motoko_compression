@@ -27,6 +27,13 @@ func encode(data : [Nat8])
 
 
 
+### Function `set_new_block_event_handler`
+``` motoko no-repl
+func set_new_block_event_handler(fn : BlockEventHandler)
+```
+
+
+
 ### Function `flush`
 ``` motoko no-repl
 func flush(is_final : Bool)

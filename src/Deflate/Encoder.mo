@@ -70,20 +70,35 @@ module {
                     Debug.print("flushed block size: " # debug_show block.size());
                 };
 
-                block.add(byte);
+                block.add(byte); // ! natural subtraction error 
             };
 
             Debug.print("block size: " # debug_show block.size());
             Debug.print("block limit: " # debug_show options.block_size);
         };
 
+        type BlockEventHandler = (block_start: Nat, block_end: Nat) -> ();
+        var new_block_event_handler : ?(BlockEventHandler) = null;
+
+        public func set_new_block_event_handler(fn : BlockEventHandler) {
+            new_block_event_handler := ?fn;
+        };
+
         public func flush(is_final : Bool) {
+
             let size = bitbuffer.bitSize();
             bitbuffer.addBit(is_final);
 
             bitbuffer.addBits(2, Block.blockToNat(block_type));
 
             block.flush(bitbuffer);
+
+            let block_start = size;
+            let block_end = bitbuffer.bitSize();
+
+            ignore do? {
+                new_block_event_handler!(block_start, block_end);
+            }
         };
 
         public func clear() {

@@ -18,6 +18,12 @@ func send_err<A, B, Err>(a : Result<A, Err>) : Result<B, Err>
 ```
 
 
+## Function `div_ceil`
+``` motoko no-repl
+func div_ceil(num : Nat, divisor : Nat) : Nat
+```
+
+
 ## Function `nat_to_le_bytes`
 ``` motoko no-repl
 func nat_to_le_bytes(num : Nat, nbytes : Nat) : [Nat8]

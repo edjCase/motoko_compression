@@ -4,6 +4,8 @@ import Buffer "mo:base/Buffer";
 import Option "mo:base/Option";
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";
+import Nat "mo:base/Nat";
+import Nat8 "mo:base/Nat8";
 import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 import Text "mo:base/Text";
@@ -12,22 +14,27 @@ import Time "mo:base/Time";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
 import CRC32 "../libs/CRC32";
+import Itertools "mo:itertools/Iter";
 
 import Deflate "../Deflate";
 import Lzss "../LZSS";
 import Header "Header";
 
-import { nat_to_le_bytes; INSTRUCTION_LIMIT } "../utils";
+import { nat_to_le_bytes; INSTRUCTION_LIMIT; div_ceil } "../utils";
 
 module {
     type Buffer<A> = Buffer.Buffer<A>;
     type BitBuffer = BitBuffer.BitBuffer;
     type Time = Time.Time;
+    type Iter<A> = Iter.Iter<A>;
 
     type Header = Header.Header;
     type DeflateOptions = Deflate.DeflateOptions;
 
-    public type EncodedResponse = [Nat8];
+    public type EncodedResponse = {
+        chunks : [[Nat8]];
+        total_size : Nat;
+    };
 
     type DeflateEncoder = {
         encode : ([Nat8]) -> ();
@@ -106,9 +113,13 @@ module {
         let crc32_builder = CRC32.CRC32();
         public let bitbuffer = BitBuffer.BitBuffer(8);
         var is_header_encoded = false; // created for class re-use
+        let block_location_in_bits = Buffer.Buffer<(Nat, Nat)>(8);
 
         // Compression
         let deflate = Deflate.Encoder(bitbuffer, deflate_options);
+        deflate.set_new_block_event_handler(func (start : Nat, end : Nat) {
+            block_location_in_bits.add((start, end));
+        });
 
         /// Returns the block size for the encoder
         public func block_size() : Nat {
@@ -148,11 +159,12 @@ module {
             input_size := 0;
             crc32_builder.reset();
             bitbuffer.clear();
+            block_location_in_bits.clear();
             is_header_encoded := false;
         };
 
         /// Returns the compressed data as a byte array and clears the internal state
-        public func finish() : [Nat8] {
+        public func finish() : EncodedResponse {
             ignore deflate.finish();
 
             // pad the bitbuffer with zero bits until it has a multiple of 8 bits
@@ -166,13 +178,47 @@ module {
             // - input size
             BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(input_size, 4));
 
-            let bytes : [Nat8] = Array.tabulate(
-                bitbuffer.byteSize(),
-                func (i : Nat): Nat8 = BitBuffer.getByte(bitbuffer, i * 8)
+            let TRANSFER_LIMIT = 1024 * 1024 * 2; // 2MB
+
+            let chunks_limit = Nat.min(TRANSFER_LIMIT, block_size());
+            let total_byte_size = bitbuffer.byteSize();
+
+            var prev_end = 0;
+            var prev_end_bit_index = 0;
+
+            let chunks : [[Nat8]] = Array.tabulate(
+                block_location_in_bits.size(),
+                func (i : Nat): [Nat8] {
+                    let (_start, _end) = switch(block_location_in_bits.getOpt(i)){
+                        case (?range) range;
+                        case (_) (prev_end, bitbuffer.bitSize());
+                    };
+                    
+                    let start = Nat.min(_start, prev_end);
+                    let end = if (64 + 8 >= (bitbuffer.bitSize() - _end : Nat) ){
+                        bitbuffer.bitSize()
+                    }else {
+                        _end
+                    };
+
+                    prev_end := end;
+
+                    let start_bit_index = Nat.max(start, prev_end_bit_index);
+                    let nbytes = div_ceil((end - start_bit_index), 8);
+
+                    let bytes = BitBuffer.getBytes(bitbuffer, start_bit_index, nbytes);
+                    prev_end_bit_index := start_bit_index + (nbytes * 8);
+
+                    bytes
+                }
             );
 
             clear();
-            bytes
+
+            return {
+                chunks;
+                total_size = total_byte_size;
+            };
         };
     };
 };

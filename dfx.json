@@ -7,24 +7,9 @@
             "main": "tests/Actor.mo",
             "args" : "--generational-gc"
         },
-        "user" : {
+        "compress" : {
             "type": "motoko",
             "main": "example/user.mo",
-            "args" : "--generational-gc"
-        },
-        "encode" : {
-            "type": "motoko",
-            "main": "example/encode.mo",
-            "args" : "--generational-gc"
-        },
-        "async-encode" : {
-            "type": "motoko",
-            "main": "example/async-encode.mo",
-            "args" : "--generational-gc"
-        },
-        "gzip-canister" : {
-            "type": "motoko",
-            "main": "example/gzip-canister.mo",
             "args" : "--generational-gc"
         }
     },

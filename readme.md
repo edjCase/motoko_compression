@@ -3,6 +3,7 @@ This is a compression library that implements the DEFLATE lossless compression a
 
 
 ## Usage
+- Example for compressing data below the block size limit (1MB)
 ```motoko
 import Blob "mo:base/Blob";
 import Text "mo:base/Text";
@@ -20,6 +21,54 @@ gzip_decoder.decode(compressed);
 let decompressed = gzip_decoder.finish();
 
 assert (decompressed.bytes == data);
+```
+- Example for compressing data above the block size limit (1MB)
+```motoko
+actor {
+    let gzip_encoder = GzipEncoder.EncoderBuilder().build();
+    
+    stable var _compressed :?GzipEncoder.EncodedResponse = null;
+
+    public func compress_data(data : [Nat8]) : async (){
+        let chunks_iter = Itertools.chunks(data.vals(), block_size);
+        
+        for (chunk in chunks_iter){
+            await compress(chunk);
+        };
+        
+        _compressed := ?gzip_encoder.finish(); // returns the encoded response and resets the encoder
+    };
+
+    let gzip_decoder = GzipDecoder.Decoder();
+
+    public shared ({caller}) func decode(chunk: [Nat8]) : async () {
+        assert caller == canisterId();
+        gzip_decoder.decode(chunk);
+    };
+ 
+    public func decode_data() : async Gzip.DecodedResponse {
+        let ?compressed = _compressed else return false;
+        
+        for (chunk in compressed.chunks.vals()){
+            await decode(chunk);
+        };
+
+        let decoded_response =  gzip_decoder.finish(); // returns the decoded response and resets the decoder
+
+        return decoded_response;
+    };
+
+    public shared ({caller}) func compress(chunk: [Nat8]) : async () {
+        assert caller == canisterId();
+
+        gzip_encoder.encode(chunk);
+    };
+
+    func canisterId() : Principal {
+        Principal.fromActor(self);
+    };
+
+};
 ```
 
 ## Resources

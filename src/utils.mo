@@ -37,6 +37,10 @@ module {
             case (#err(e)) #err(e);
         };
     };
+
+    public func div_ceil(num : Nat, divisor : Nat) : Nat {
+        (num + (divisor - 1)) / divisor;
+    };
     
     public func nat_to_le_bytes(num : Nat, nbytes: Nat): [Nat8] {
         var n = num;

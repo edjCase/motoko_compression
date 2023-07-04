@@ -6,7 +6,6 @@
 * [Deflate/Encoder](Deflate/Encoder.md) 
 * [Deflate/Symbol](Deflate/Symbol.md) 
 * [Deflate/lib](Deflate/lib.md) 
-* [Gzip/AsyncEncoder](Gzip/AsyncEncoder.md) 
 * [Gzip/Decoder](Gzip/Decoder.md) 
 * [Gzip/Encoder](Gzip/Encoder.md) 
 * [Gzip/Header](Gzip/Header.md) 

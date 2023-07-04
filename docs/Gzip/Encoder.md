@@ -2,7 +2,7 @@
 
 ## Type `EncodedResponse`
 ``` motoko no-repl
-type EncodedResponse = [Nat8]
+type EncodedResponse = { chunks : [[Nat8]]; total_size : Nat }
 ```
 
 
@@ -138,7 +138,7 @@ Clears the internal state of the encoder
 
 ### Function `finish`
 ``` motoko no-repl
-func finish() : [Nat8]
+func finish() : EncodedResponse
 ```
 
 Returns the compressed data as a byte array and clears the internal state

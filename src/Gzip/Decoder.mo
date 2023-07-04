@@ -23,6 +23,7 @@ import { nat_to_le_bytes; le_bytes_to_nat } "../utils";
 
 module {
     type Buffer<A> = Buffer.Buffer<A>;
+    type BitBuffer = BitBuffer.BitBuffer;
     type Header = Header.Header;
     type DeflateOptions = Deflate.DeflateOptions;
 
@@ -38,7 +39,6 @@ module {
     /// Requires that the full header is available in the `init_bytes` array before initialization
     public class Decoder() {
         let reader = BitReader.fromBytes([]);
-        reader.hideTailBits(8 * 8);
 
         var buffer = Buffer.Buffer<Nat8>(8);
         var opt_header : ?Header = null;
@@ -172,7 +172,6 @@ module {
             update_index := 0;
 
             reader.clear();
-            reader.hideTailBits(8 * 8);
 
             buffer := Buffer.Buffer<Nat8>(8);
             deflate_decoder := Deflate.Decoder(reader, ?buffer);
@@ -191,7 +190,8 @@ module {
                 update_index += 1;
             };
 
-            reader.showTailBits();
+            // Debug.print("Gzip Decoder: Finished decoding");
+            // Debug.print("remaining bits: " # debug_show(reader.bitSize()));
             reader.byteAlign();
 
             let calc_crc32 = crc32_builder.finish();
