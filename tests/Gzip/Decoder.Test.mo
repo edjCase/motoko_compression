@@ -91,7 +91,6 @@ let success = run([
             assertTrue(
                 decoded == Text.encodeUtf8(Example.text),
             )
-        
         }),
     ])
 ]);
