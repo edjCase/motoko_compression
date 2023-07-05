@@ -64,17 +64,17 @@ module {
         public func encode(data : [Nat8]) {
             for (byte in data.vals()){
                 if (block.size() >= options.block_size) {
-                    Debug.print("flushed block size: " # debug_show block.size());
+                    // Debug.print("flushed block size: " # debug_show block.size());
 
                     flush(false);
-                    Debug.print("flushed block size: " # debug_show block.size());
+                    // Debug.print("flushed block size: " # debug_show block.size());
                 };
 
-                block.add(byte); // ! natural subtraction error 
+                block.add(byte);
             };
 
-            Debug.print("block size: " # debug_show block.size());
-            Debug.print("block limit: " # debug_show options.block_size);
+            // Debug.print("block size: " # debug_show block.size());
+            // Debug.print("block limit: " # debug_show options.block_size);
         };
 
         type BlockEventHandler = (block_start: Nat, block_end: Nat) -> ();

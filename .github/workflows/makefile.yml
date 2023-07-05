@@ -14,20 +14,18 @@ jobs:
                 node-version: 14
             - uses: aviate-labs/setup-dfx@v0.2.3
               with:
-                vessel-version: 0.6.3
                 dfx-version: 0.14.0
-              
-            - name: update moc version in dfx
-              run: |
-                dfx cache install
-                rm -rvf $(dfx cache show)/moc
-                cp $(vessel bin)/moc $(dfx cache show)
+
+            - name: Install moc version manager
+              run: | 
+                  npm  --yes -g i mocv
+                  mocv use 0.9.1
+                  export DFX_MOC_PATH=$(mocv bin current)/moc
 
             - name: install mops
               run: |
                   npm --yes -g i ic-mops@0.8.3
                   mops i
-                  mops sources
 
             - name: Detect Warnings
               run: make no-warn
