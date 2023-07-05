@@ -1,6 +1,5 @@
 {
     "version": 1,
-    "dfx": "0.14.0",
     "canisters": {
         "test": {
             "type": "motoko",
@@ -9,7 +8,12 @@
         },
         "compress" : {
             "type": "motoko",
-            "main": "example/user.mo",
+            "main": "example/compress.mo",
+            "args" : "--generational-gc"
+        },
+        "compress-images" : {
+            "type": "motoko",
+            "main": "example/compress-images.mo",
             "args" : "--generational-gc"
         }
     },

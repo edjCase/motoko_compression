@@ -12,10 +12,10 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                 node-version: 14
-            - uses: aviate-labs/setup-dfx@v0.2.3
-              with:
-                dfx-version: 0.14.0
 
+            - name: Installing DFX
+              run: DFX_VERSION=0.14.0 sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+           
             - name: Install moc version manager
               run: | 
                   npm  --yes -g i mocv
