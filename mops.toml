@@ -1,6 +1,6 @@
 [package]
 name = "deflate"
-version = "0.0.2"
+version = "0.1.0"
 description = "Deflate compression and decompression algorithm with support for the GZIP file format."
 repository = "https://github.com/NatLabs/deflate.mo"
 keywords = [ "compression", "decompression", "deflate", "gzip" ]
