@@ -1,15 +1,11 @@
-import Array "mo:base/Array";
 import Blob "mo:base/Blob";
 import Buffer "mo:base/Buffer";
-import Char "mo:base/Char";
-import Debug "mo:base/Debug";
 import Deque "mo:base/Deque";
 import Iter "mo:base/Iter";
 import Option "mo:base/Option";
 import Nat "mo:base/Nat";
 import Nat8 "mo:base/Nat8";
 import Result "mo:base/Result";
-import TrieMap "mo:base/TrieMap";
 import Prelude "mo:base/Prelude";
 
 import It "mo:itertools/Iter";
@@ -17,7 +13,6 @@ import CircularBuffer "mo:circular-buffer";
 import BufferDeque "mo:buffer-deque/BufferDeque";
 
 import Common "../Common";
-import Utils "../../utils";
 
 import PrefixTable "PrefixTable";
 
@@ -31,7 +26,7 @@ module {
     type Result<Ok, Err> = Result.Result<Ok, Err>;
 
     public type Sink = {
-        add: (entry: LzssEntry) -> ();
+        add : (entry : LzssEntry) -> ();
     };
 
     public func Default() : Encoder {
@@ -44,7 +39,7 @@ module {
 
         lzss.encode(bytes, buffer);
         lzss.flush(buffer);
-        buffer
+        buffer;
     };
 
     public class Encoder(opt_window_size : ?Nat) {
@@ -59,7 +54,7 @@ module {
         public func size() : Nat = input_size;
         public func windowSize() : Nat = window_size;
 
-        public func encodeBlob(blob : Blob, sink: Sink) {
+        public func encodeBlob(blob : Blob, sink : Sink) {
             let bytes = Blob.toArray(blob);
             encode(bytes, sink);
         };
@@ -68,8 +63,8 @@ module {
         let cache_buffer = CircularBuffer.CircularBuffer<Nat8>(2);
         var match_index : ?Nat = null;
 
-        func encode_as_literals(n: Nat, sink: Sink){
-            for (i in It.range(0, n)){
+        func encode_as_literals(n : Nat, sink : Sink) {
+            for (i in It.range(0, n)) {
                 let ?byte = byte_buffer.popFront() else Prelude.unreachable();
                 search_buffer.push(byte);
                 sink.add(#literal(byte));
@@ -77,25 +72,25 @@ module {
             };
         };
 
-        public func encode_byte(future_byte : Nat8, sink : Sink){
-            
+        public func encode_byte(future_byte : Nat8, sink : Sink) {
+
             byte_buffer.addBack(future_byte);
 
-            if (cache_buffer.size() == 2){
+            if (cache_buffer.size() == 2) {
                 ignore prefix_table.insert(
-                    [ cache_buffer.get(0), cache_buffer.get(1), byte_buffer.get(0)], 
+                    [cache_buffer.get(0), cache_buffer.get(1), byte_buffer.get(0)],
                     0,
                     3,
-                    input_size - 2
+                    input_size - 2,
                 );
 
                 ignore cache_buffer.removeFirst();
-            }else if (cache_buffer.size() == 1 and byte_buffer.size() >= 2){
+            } else if (cache_buffer.size() == 1 and byte_buffer.size() >= 2) {
                 ignore prefix_table.insert(
-                    [ cache_buffer.get(0), byte_buffer.get(0), byte_buffer.get(1)], 
+                    [cache_buffer.get(0), byte_buffer.get(0), byte_buffer.get(1)],
                     0,
                     3,
-                    input_size - 1
+                    input_size - 1,
                 );
 
                 ignore cache_buffer.removeFirst();
@@ -103,60 +98,59 @@ module {
 
             if (byte_buffer.size() < 3) return;
 
-            if (byte_buffer.size() == 3){
+            if (byte_buffer.size() == 3) {
                 let opt_prefix_index = prefix_table.insert(
                     [
                         byte_buffer.get(0),
                         byte_buffer.get(1),
                         byte_buffer.get(2),
-                    ], 
-                    0, 
+                    ],
+                    0,
                     3,
-                    input_size
+                    input_size,
                 );
 
-                switch(opt_prefix_index){
+                switch (opt_prefix_index) {
                     case (null) {
                         encode_as_literals(1, sink);
                         match_index := null;
                     };
                     case (?prefix_index) {
                         let backward_offset = (input_size - prefix_index) : Nat;
-                        if (backward_offset > search_buffer.size()){
+                        if (backward_offset > search_buffer.size()) {
                             encode_as_literals(1, sink);
                             match_index := null;
-                        }else{
+                        } else {
                             match_index := opt_prefix_index;
                         };
                     };
                 };
-            }else {
+            } else {
                 let ?prefix_index = match_index else Prelude.unreachable();
                 let backward_offset = (input_size - prefix_index) : Nat;
 
                 let start_index = (search_buffer.size() - backward_offset) : Nat;
-                let future_byte_index = start_index +  (byte_buffer.size() - 1) : Nat;
+                let future_byte_index = start_index + (byte_buffer.size() - 1) : Nat;
 
-
-                if (future_byte_index >= search_buffer.size() or future_byte != search_buffer.get(future_byte_index) or byte_buffer.size() >= Common.MATCH_MAX_SIZE ){
+                if (future_byte_index >= search_buffer.size() or future_byte != search_buffer.get(future_byte_index) or byte_buffer.size() >= Common.MATCH_MAX_SIZE) {
                     let len = (byte_buffer.size() - 1) : Nat;
 
-                    for (i in It.range(0, len)){
-                        if (byte_buffer.size() >= 3 ){
+                    for (i in It.range(0, len)) {
+                        if (byte_buffer.size() >= 3) {
                             let index = i + input_size;
 
                             ignore prefix_table.insert(
-                                [ byte_buffer.get(0), byte_buffer.get(1),  byte_buffer.get(2)], 
+                                [byte_buffer.get(0), byte_buffer.get(1), byte_buffer.get(2)],
                                 0,
                                 3,
-                                index
+                                index,
                             );
                         };
 
                         let ?byte = byte_buffer.popFront() else Prelude.unreachable();
                         search_buffer.push(byte);
 
-                        if (byte_buffer.size() < 3){
+                        if (byte_buffer.size() < 3) {
                             cache_buffer.add(byte);
                         };
                     };
@@ -168,22 +162,22 @@ module {
             };
         };
 
-        public func encode(bytes : [Nat8], sink: Sink) {
-            for (byte in bytes.vals()){
+        public func encode(bytes : [Nat8], sink : Sink) {
+            for (byte in bytes.vals()) {
                 encode_byte(byte, sink);
             };
         };
 
-        public func flush(sink: Sink) {
+        public func flush(sink : Sink) {
             let len = byte_buffer.size();
             if (len == 0) return;
 
-            if (Option.isSome(match_index) and len >= 3){
+            if (Option.isSome(match_index) and len >= 3) {
                 let ?prefix_index = match_index else Prelude.unreachable();
                 let backward_offset = (input_size - prefix_index) : Nat;
                 sink.add(#pointer(backward_offset, len));
-            }else{
-                for ( i in It.range(0, len)){
+            } else {
+                for (i in It.range(0, len)) {
                     let ?byte = byte_buffer.popFront() else Prelude.unreachable();
                     sink.add(#literal(byte));
                 };
@@ -191,7 +185,7 @@ module {
 
         };
 
-        public func finish(sink: Sink) {
+        public func finish(sink : Sink) {
             flush(sink);
             clear();
         };
@@ -204,7 +198,7 @@ module {
             match_index := null;
         };
 
-        public func encode_v1(bytes : [Nat8], sink: Sink) {
+        public func encode_v1(bytes : [Nat8], sink : Sink) {
             var curr_index = 0;
 
             label while_loop while (curr_index < bytes.size()) {
@@ -228,7 +222,7 @@ module {
                                     ignore prefix_table.insert(bytes, curr_index + i, 3, input_size + i);
                                     search_buffer.push(bytes[curr_index + i]);
                                 };
-                                
+
                                 sink.add(#pointer(backward_offset, len));
 
                                 curr_index += len;
