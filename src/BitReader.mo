@@ -11,7 +11,7 @@ module {
         let bitbuffer = BitBuffer.new();
         var tailBits = 0;
 
-        func is_valid(n: Nat) : Bool {
+        func is_valid(n : Nat) : Bool {
             n <= (bitbuffer.bitSize() - offset - tailBits : Nat);
         };
 
@@ -29,7 +29,7 @@ module {
             bit;
         };
 
-        public func peekBits(n: Nat) : Nat {
+        public func peekBits(n : Nat) : Nat {
             if (not is_valid(n)) {
                 Debug.trap("BitReader.peekBits: out of bounds at offset");
             };
@@ -37,7 +37,7 @@ module {
             bitbuffer.getBits(offset, n);
         };
 
-        public func skipBits(n: Nat) {
+        public func skipBits(n : Nat) {
             if (not is_valid(n)) {
                 Debug.trap("BitReader.skipBits: out of bounds");
             };
@@ -51,16 +51,16 @@ module {
             bits;
         };
 
-        public func peekByte() : Nat8{
+        public func peekByte() : Nat8 {
             if (not is_valid(8)) {
                 Debug.trap("BitReader.peekByte: out of bounds");
             };
 
             let nbits = bitSize();
 
-            if (nbits < 8){
+            if (nbits < 8) {
                 Nat8.fromNat(bitbuffer.getBits(offset, nbits));
-            }else {
+            } else {
                 BitBuffer.getByte(bitbuffer, offset);
             };
 
@@ -73,12 +73,12 @@ module {
             byte;
         };
 
-        public func peekBytes(nbytes: Nat) : [Nat8] {
+        public func peekBytes(nbytes : Nat) : [Nat8] {
             let pos = getPosition();
-            
+
             let res = Array.tabulate(
                 nbytes,
-                func(i : Nat) : Nat8 {
+                func(_ : Nat) : Nat8 {
                     readByte();
                 },
             );
@@ -92,17 +92,17 @@ module {
 
             Array.tabulate(
                 min_bytes,
-                func(i : Nat) : Nat8 {
+                func(_ : Nat) : Nat8 {
                     readByte();
                 },
             );
         };
 
         public func getPosition() : Nat { offset };
-        public func setPosition(pos : Nat) { offset := pos; };
+        public func setPosition(pos : Nat) { offset := pos };
 
-        public func reset() { offset := 0; };
-        
+        public func reset() { offset := 0 };
+
         public func clearRead() {
             bitbuffer.dropBits(offset);
             offset := 0;
@@ -113,7 +113,7 @@ module {
             tailBits := 0;
             bitbuffer.clear();
         };
-        
+
         public func bitSize() : Nat {
             if (tailBits + offset < (bitbuffer.bitSize() : Nat)) {
                 (bitbuffer.bitSize() - offset - tailBits : Nat);
@@ -133,20 +133,20 @@ module {
         public func byteAlign() {
             let size = bitSize();
 
-            if (size % 8 != 0){
+            if (size % 8 != 0) {
                 offset += (size % 8);
-            }
+            };
         };
 
         public func addBytes(bytes : [Nat8]) {
             BitBuffer.addBytes(bitbuffer, bytes);
         };
 
-        public func hideTailBits(n: Nat) {
+        public func hideTailBits(n : Nat) {
             tailBits := n;
         };
 
-        public func hiddenTailBits() : Nat{
+        public func hiddenTailBits() : Nat {
             tailBits;
         };
 
@@ -155,7 +155,7 @@ module {
         };
     };
 
-    public func fromBytes(bytes: [Nat8]) : BitReader {
+    public func fromBytes(bytes : [Nat8]) : BitReader {
         let reader = BitReader();
         reader.addBytes(bytes);
         reader;

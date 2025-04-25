@@ -1,14 +1,7 @@
-import Debug "mo:base/Debug";
-
-import Prim "mo:⛔";
-import P "mo:base/Prelude";
-import Option "mo:base/Option";
 import Hash "mo:base/Hash";
-import A "mo:base/Array";
 
 import List "mo:base/List";
 import AssocList "mo:base/AssocList";
-import I "mo:base/Iter";
 
 module {
 
@@ -37,12 +30,11 @@ module {
 
     type List<T> = List.List<T>;
 
-    public func equal_hash(h1: Hash, h2: Hash) : Bool {
-        h1 == h2
+    public func equal_hash(h1 : Hash, h2 : Hash) : Bool {
+        h1 == h2;
     };
 
     public func empty<V>() : Trie<V> { #empty };
-
 
     public func size<V>(t : Trie<V>) : Nat {
         switch t {
@@ -164,15 +156,6 @@ module {
             };
         };
         rec(t, 0);
-    };
-
-    func splitAssocList<V>(al : AssocList<Hash, V>, bitpos : Nat) : (AssocList<Hash, V>, AssocList<Hash, V>) {
-        List.partition(
-            al,
-            func((hash : Hash, v : V)) : Bool {
-                not Hash.bit(hash, bitpos);
-            },
-        );
     };
 
     func splitList<V>(l : AssocList<Hash, V>, bitpos : Nat) : (Nat, AssocList<Hash, V>, Nat, AssocList<Hash, V>) {

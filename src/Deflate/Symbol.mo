@@ -9,7 +9,7 @@ import Result "mo:base/Result";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
 import Itertools "mo:itertools/Iter";
-import DeIter "mo:itertools/Deiter";
+import RevIter "mo:itertools/RevIter";
 
 import Common "../LZSS/Common";
 import Utils "../utils";
@@ -376,7 +376,7 @@ module {
 
         public func save(_ : BitBuffer, _ : Encoder) : Result<(), Text> = #ok();
 
-        public func load(reader : BitReader) : Result<Decoder, Text> {
+        public func load(_ : BitReader) : Result<Decoder, Text> {
             let literal_decoder = HuffmanDecoder.Builder(9);
 
             for (
@@ -395,7 +395,7 @@ module {
 
                     let res = literal_decoder.setMapping(symbol, code);
                     switch (res) {
-                        case (#ok(_))();
+                        case (#ok(_)) ();
                         case (#err(msg)) return #err(msg);
                     };
                 };
@@ -408,7 +408,7 @@ module {
 
                 let res = distance_decoder.setMapping(symbol, code);
                 switch (res) {
-                    case (#ok(_))();
+                    case (#ok(_)) ();
                     case (#err(msg)) return #err(msg);
                 };
             };
@@ -436,7 +436,7 @@ module {
                 };
             };
 
-            if (empty_distance_table){
+            if (empty_distance_table) {
                 distance_freq[0] := 1;
             };
 
@@ -462,26 +462,22 @@ module {
             let codes = build_bitwidth_codes(codec, literal_code_count, distance_code_count);
 
             let code_counts = Array.init<Nat>(19, 0);
-            
-            for (bit_code in codes.vals()){
+
+            for (bit_code in codes.vals()) {
                 code_counts[bit_code.symbol] += 1;
             };
 
-
-
             let #ok(bitwidth_encoder) = HuffmanEncoder.fromFrequencies(
-                Array.freeze(code_counts), 
-                7
+                Array.freeze(code_counts),
+                7,
             ) else return #err("Failed to build bitwidth encoder");
-            
-            let iter = DeIter.reverse(
-                DeIter.range(0, BITWIDTH_CODE_ORDER.size())
-            );
+
+            let iter = RevIter.range(0, BITWIDTH_CODE_ORDER.size()).rev();
 
             var bitwidth_code_order_max = 0;
-            label for_loop for (i in iter){
+            label for_loop for (i in iter) {
                 let index = BITWIDTH_CODE_ORDER[i];
-                if (code_counts[index] > 0 and bitwidth_encoder.lookup(index).bitwidth > 0){
+                if (code_counts[index] > 0 and bitwidth_encoder.lookup(index).bitwidth > 0) {
                     bitwidth_code_order_max := i;
                     break for_loop;
                 };
@@ -495,11 +491,10 @@ module {
 
             let code_order_iter = Itertools.take(
                 BITWIDTH_CODE_ORDER.vals(),
-                bitwidth_code_count
+                bitwidth_code_count,
             );
 
-
-            for (i in code_order_iter){
+            for (i in code_order_iter) {
                 var bitwidth = 0;
                 if (code_counts[i] != 0) {
                     bitwidth := bitwidth_encoder.lookup(i).bitwidth;
@@ -507,8 +502,8 @@ module {
 
                 bitbuffer.addBits(3, bitwidth);
             };
-            
-            for ({symbol; bitwidth; count} in codes.vals()) {
+
+            for ({ symbol; bitwidth; count } in codes.vals()) {
                 bitwidth_encoder.encode(bitbuffer, symbol);
 
                 if (bitwidth > 0) {
@@ -567,7 +562,6 @@ module {
             rle(run_len_buffer, codec.literal, literal_code_count);
             rle(run_len_buffer, codec.distance, distance_code_count);
 
-
             let codes = Buffer.Buffer<BitwidthCode>(8);
             let bit_code = {
                 symbol = 0;
@@ -620,7 +614,6 @@ module {
                     };
                 };
             };
-
 
             codes;
         };
@@ -686,7 +679,6 @@ module {
 
             let bitwidths_buffer = Buffer.Buffer<Nat>(literal_code_count);
 
-            var last_index = 0;
             while (bitwidths_buffer.size() < literal_code_count) {
                 let code_res = bitwidth_decoder.decode(reader);
                 let #ok(code) = code_res else return send_err(code_res);

@@ -1,11 +1,9 @@
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
 import Debug "mo:base/Debug";
-import Hash "mo:base/Hash";
 import Iter "mo:base/Iter";
 import Nat8 "mo:base/Nat8";
 import Nat16 "mo:base/Nat16";
-import Nat32 "mo:base/Nat32";
 import HashMap "mo:base/HashMap";
 import TrieMap "mo:base/TrieMap";
 
@@ -41,8 +39,8 @@ module {
 
         public func insert_triple(
             (byte1, byte2, byte3) : (Nat8, Nat8, Nat8),
-            index : Nat
-        ) : ? Nat {
+            index : Nat,
+        ) : ?Nat {
             insert([byte1, byte2, byte3], 0, 3, index);
         };
 
@@ -51,9 +49,9 @@ module {
             bytes : [Nat8],
             start : Nat,
             len : Nat,
-            index : Nat
+            index : Nat,
         ) : ?Nat {
-            if (bytes.size() < (start +  len)){
+            if (bytes.size() < (start + len)) {
                 Debug.trap("PrefixTable.insert: bytes.size() < (start +  len)");
             };
 
@@ -94,8 +92,8 @@ module {
         };
 
         public func clear() {
-            switch(table){
-                case (#small(small_table)) {
+            switch (table) {
+                case (#small(_)) {
                     table := #small(HashValueTrieMap.HashValueTrieMap(hash_fn));
                 };
                 case (#large(large_table)) {
@@ -111,32 +109,5 @@ module {
             };
         };
 
-        func resize() {
-            switch table {
-                case (#large(_)) {};
-                case (#small(small_table)) {
-                    let large_table = Array.init<?Buffer<(Nat8, Nat)>>(LARGE_TABLE_SIZE, null);
-
-                    for ((prefix_hash, index) in small_table.entries()) {
-
-                        var table_index = Nat32.toNat(prefix_hash >> 8);
-                        let third_byte = Nat8.fromNat(Nat32.toNat(prefix_hash & 0xFF));
-
-                        let third_byte_buffer = switch (large_table.get(table_index)) {
-                            case (?buffer) buffer;
-                            case (null) {
-                                let new_buffer = Buffer.Buffer<(Nat8, Nat)>(8);
-                                large_table.put(table_index, ?new_buffer);
-                                new_buffer;
-                            };
-                        };
-
-                        third_byte_buffer.add((third_byte, index));
-                    };
-
-                    table := #large(large_table);
-                };
-            };
-        };
     };
 };

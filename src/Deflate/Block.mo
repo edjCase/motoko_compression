@@ -3,12 +3,9 @@ import Buffer "mo:base/Buffer";
 import Debug "mo:base/Debug";
 import Deque "mo:base/Deque";
 import Nat "mo:base/Nat";
-import Nat16 "mo:base/Nat16";
-import Option "mo:base/Option";
 import Iter "mo:base/Iter";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
-import BufferDeque "mo:buffer-deque/BufferDeque";
 import Itertools "mo:itertools/Iter";
 
 import Lzss "../LZSS";
@@ -25,7 +22,7 @@ module {
 
     public type BlockType = {
         #Raw;
-        #Fixed: {
+        #Fixed : {
             lzss : Lzss.Encoder;
             block_limit : Nat;
         };
@@ -47,15 +44,15 @@ module {
         switch byte {
             case (0) (#Raw);
             case (1) {
-                #Fixed({ 
-                    lzss = Lzss.Encoder(null); 
-                    block_limit = INSTRUCTION_LIMIT; 
+                #Fixed({
+                    lzss = Lzss.Encoder(null);
+                    block_limit = INSTRUCTION_LIMIT;
                 });
             };
             case (2) {
-                #Dynamic({ 
-                    lzss = Lzss.Encoder(null); 
-                    block_limit = INSTRUCTION_LIMIT; 
+                #Dynamic({
+                    lzss = Lzss.Encoder(null);
+                    block_limit = INSTRUCTION_LIMIT;
                 });
             };
             case (_) Debug.trap("Invalid block type");
@@ -65,28 +62,28 @@ module {
     public type BlockInterface = {
         size : () -> Nat;
         append : ([Nat8]) -> ();
-        add: (Nat8) -> ();
+        add : (Nat8) -> ();
         flush : (BitBuffer) -> ();
         clear : () -> ();
     };
 
-    public func Block(block_type: BlockType): BlockInterface {
+    public func Block(block_type : BlockType) : BlockInterface {
         switch block_type {
             case (#Raw) Raw();
-            case (#Fixed({lzss; block_limit})) {
+            case (#Fixed({ lzss; block_limit })) {
                 Compress(
                     lzss,
-                    Symbol.FixedHuffmanCodec(), 
-                    block_limit
+                    Symbol.FixedHuffmanCodec(),
+                    block_limit,
                 );
-            }; 
-            case (#Dynamic({lzss; block_limit})) {
+            };
+            case (#Dynamic({ lzss; block_limit })) {
                 Compress(
-                    lzss, 
-                    Symbol.DynamicHuffmanCodec(), 
-                    block_limit
+                    lzss,
+                    Symbol.DynamicHuffmanCodec(),
+                    block_limit,
                 );
-            }; 
+            };
         };
     };
 
@@ -95,9 +92,9 @@ module {
         var input_size = 0;
         var byte_aligned = false;
 
-        public func size() : Nat { input_size; };
+        public func size() : Nat { input_size };
 
-        public func add(byte: Nat8) {
+        public func add(byte : Nat8) {
             input_size += 1;
             deque := Deque.pushBack<Nat8>(deque, byte);
         };
@@ -130,42 +127,42 @@ module {
             };
         };
 
-        public func clear(){
+        public func clear() {
             input_size := 0;
             deque := Deque.empty<Nat8>();
             byte_aligned := false;
         };
     };
 
-    public class Compress(lzss : Lzss.Encoder, huffman : Symbol.HuffmanCodec, limit: Nat) {
+    public class Compress(lzss : Lzss.Encoder, huffman : Symbol.HuffmanCodec, _ : Nat) {
         var input_size = 0;
         var compressed_symbols = Buffer.Buffer<Symbol>(8);
         let sink = {
-            add = func  (symbol: Lzss.LzssEntry) {
+            add = func(symbol : Lzss.LzssEntry) {
                 compressed_symbols.add(symbol);
             };
         };
-        
+
         public func size() : Nat {
             return input_size;
         };
 
-        public func add(byte: Nat8) : () {
+        public func add(byte : Nat8) : () {
             input_size += 1;
             lzss.encode_byte(byte, sink);
-        }; 
+        };
 
         public func append(bytes : [Nat8]) {
             input_size += bytes.size();
             lzss.encode(bytes, sink);
         };
 
-        func refresh(){
+        func refresh() {
             input_size := 0;
             compressed_symbols.clear();
         };
 
-        public func clear(){
+        public func clear() {
             lzss.clear();
             compressed_symbols.clear();
             input_size := 0;
@@ -176,7 +173,7 @@ module {
 
             let used_symbols = Itertools.add(
                 compressed_symbols.vals(),
-                #EndOfBlock
+                #EndOfBlock,
             );
 
             let symbol_encoder_rs = huffman.build(used_symbols);
@@ -187,7 +184,7 @@ module {
 
             ignore huffman.save(bitbuffer, symbol_encoder);
 
-            for (symbol in compressed_symbols.vals()){
+            for (symbol in compressed_symbols.vals()) {
                 symbol_encoder.encode(bitbuffer, symbol);
             };
 

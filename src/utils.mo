@@ -9,9 +9,8 @@ import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 import Result "mo:base/Result";
 import Prelude "mo:base/Prelude";
-import Order "mo:base/Order";
 
-import Deiter "mo:itertools/Deiter";
+import RevIter "mo:itertools/RevIter";
 import Itertools "mo:itertools/Iter";
 
 module {
@@ -23,16 +22,16 @@ module {
     type List<A> = List.List<A>;
 
     public let INSTRUCTION_LIMIT = 1048576;
-    public func buffer_get_last<A>(buffer: Buffer<A>): ?A{
+    public func buffer_get_last<A>(buffer : Buffer<A>) : ?A {
         if (buffer.size() == 0) {
-            null
+            null;
         } else {
-            ?Buffer.last(buffer)
-        }
+            ?Buffer.last(buffer);
+        };
     };
 
-    public func send_err<A, B, Err>(a: Result<A, Err>) : Result<B, Err>{
-        switch(a){
+    public func send_err<A, B, Err>(a : Result<A, Err>) : Result<B, Err> {
+        switch (a) {
             case (#ok(_)) Prelude.unreachable();
             case (#err(e)) #err(e);
         };
@@ -41,40 +40,40 @@ module {
     public func div_ceil(num : Nat, divisor : Nat) : Nat {
         (num + (divisor - 1)) / divisor;
     };
-    
-    public func nat_to_le_bytes(num : Nat, nbytes: Nat): [Nat8] {
+
+    public func nat_to_le_bytes(num : Nat, nbytes : Nat) : [Nat8] {
         var n = num;
 
         Array.tabulate(
             nbytes,
-            func (_: Nat) : Nat8 {
-                if ( n == 0) {
+            func(_ : Nat) : Nat8 {
+                if (n == 0) {
                     return 0;
                 };
 
                 let byte = Nat8.fromNat(n % 256);
                 n /= 256;
-                byte
-            }
-        )
+                byte;
+            },
+        );
     };
 
-    public func nat_to_bytes(num : Nat, nbytes: Nat): [Nat8] {
+    public func nat_to_bytes(num : Nat, nbytes : Nat) : [Nat8] {
         Array.reverse(nat_to_bytes(num, nbytes));
     };
 
-    public func bytes_to_nat(bytes: [Nat8]) : Nat {
+    public func bytes_to_nat(bytes : [Nat8]) : Nat {
         var n : Nat = 0;
-        
+
         for (byte in bytes.vals()) {
             n *= 256;
             n += Nat8.toNat(byte);
         };
 
-        n
+        n;
     };
 
-    public func le_bytes_to_nat(bytes: [Nat8]) : Nat {
+    public func le_bytes_to_nat(bytes : [Nat8]) : Nat {
         bytes_to_nat(Array.reverse(bytes));
     };
 
@@ -101,8 +100,6 @@ module {
     public func iter_hash<A>(elem_hash : (A) -> Hash.Hash) : (Iter<A>) -> Hash.Hash {
         func(iter : Iter<A>) : Hash.Hash {
 
-            var hash : Nat32 = 0;
-
             hashNat8Iter(
                 Iter.map(
                     iter,
@@ -110,7 +107,7 @@ module {
                         elem_hash(a);
                     },
                 )
-            )
+            );
         };
     };
 
@@ -138,7 +135,7 @@ module {
         func(deque : Deque<A>) : Hash.Hash {
 
             let iter = Iter.map(
-                Deiter.fromDeque(deque),
+                RevIter.fromDeque(deque),
                 func(a : A) : Hash.Hash {
                     elem_hash(a);
                 },
@@ -151,18 +148,18 @@ module {
     public func deque_equal<A>(is_elem_equal : (A, A) -> Bool) : (Deque<A>, Deque<A>) -> Bool {
         func(a : Deque<A>, b : Deque<A>) : Bool {
             Itertools.equal(
-                Deiter.fromDeque(a),
-                Deiter.fromDeque(b),
+                RevIter.fromDeque(a),
+                RevIter.fromDeque(b),
                 is_elem_equal,
             );
         };
     };
 
-    public func nat8_to_32(n: Nat8): Nat32 {
+    public func nat8_to_32(n : Nat8) : Nat32 {
         Nat32.fromNat(Nat8.toNat(n));
     };
 
-    public func nat8_to_16(n: Nat8): Nat16 {
+    public func nat8_to_16(n : Nat8) : Nat16 {
         Nat16.fromNat(Nat8.toNat(n));
     };
 
@@ -184,7 +181,7 @@ module {
         return hash;
     };
 
-    func hashNat8Iter(iter: Iter<Hash>) : Hash{
+    func hashNat8Iter(iter : Iter<Hash>) : Hash {
         var hash : Nat32 = 0;
         for (natOfKey in iter) {
             hash := hash +% natOfKey;
@@ -198,5 +195,5 @@ module {
 
         return hash;
     };
-    
+
 };

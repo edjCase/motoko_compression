@@ -1,20 +1,16 @@
 import Array "mo:base/Array";
-import Debug "mo:base/Debug";
-import Iter "mo:base/Iter";
 import Nat16 "mo:base/Nat16";
 import Nat "mo:base/Nat";
 import Buffer "mo:base/Buffer";
 import Result "mo:base/Result";
-import Option "mo:base/Option";
 import Order "mo:base/Order";
 import Heap "mo:base/Heap";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
 import Itertools "mo:itertools/Iter";
-import Deiter "mo:itertools/Deiter";
+import RevIter "mo:itertools/RevIter";
 import BitReader "../BitReader";
 
-import { nat8_to_16 } "../utils";
 import Common "Common";
 import Prelude "mo:base/Prelude";
 
@@ -47,7 +43,6 @@ module {
             bitwidth,
             HuffmanCodes.calc_max_bitwidth(frequencies),
         );
-
 
         let bitwidthes : [Nat] = HuffmanCodes.calc_bitwidths(max_bitwidth, frequencies);
 
@@ -91,9 +86,9 @@ module {
         public func max_symbol() : Nat {
             var max_index = 0;
 
-            let range = Deiter.range(0, table.size());
+            let range = RevIter.range(0, table.size());
 
-            label for_loop for (i in Deiter.reverse(range)) {
+            label for_loop for (i in range.rev()) {
 
                 if (table[i].bitwidth > 0) {
                     max_index := i;
@@ -167,7 +162,7 @@ module {
             };
 
             public module Node {
-                public func merge(self: Node, other : Node) {
+                public func merge(self : Node, other : Node) {
                     self.weight += other.weight;
                     self.symbols.append(other.symbols);
                 };
@@ -176,10 +171,10 @@ module {
             public func calc_bitwidths(max_bitwidth : Nat, frequencies : [Nat]) : [Nat] {
                 let nodes = Buffer.Buffer<Node>(8);
 
-                func deep_copy(nodes: Buffer.Buffer<Node>): Buffer.Buffer<Node>{
+                func deep_copy(nodes : Buffer.Buffer<Node>) : Buffer.Buffer<Node> {
                     let new_nodes = Buffer.Buffer<Node>(nodes.size());
 
-                    for (node in nodes.vals()){
+                    for (node in nodes.vals()) {
                         let new_node = {
                             var weight = node.weight;
                             symbols = Buffer.clone(node.symbols);
@@ -188,7 +183,7 @@ module {
                         new_nodes.add(new_node);
                     };
 
-                    new_nodes
+                    new_nodes;
                 };
 
                 for ((symbol, weight) in Itertools.enumerate(frequencies.vals())) {
@@ -268,7 +263,7 @@ module {
 
                 if (nodes.size() < 2) return;
 
-                let new_size = (nodes.size() ) / 2;
+                let new_size = (nodes.size()) / 2;
 
                 var i = 0;
 

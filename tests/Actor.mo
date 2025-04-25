@@ -3,11 +3,9 @@ import Iter "mo:base/Iter";
 import Text "mo:base/Text";
 import Blob "mo:base/Blob";
 import Buffer "mo:base/Buffer";
-import Array "mo:base/Array";
 
 import ActorSpec "utils/ActorSpec2";
 import Gzip "../src/Gzip";
-import GzipHeader "../src/Gzip/Header";
 
 import GzipEncoder "../src/Gzip/Encoder";
 
@@ -18,7 +16,7 @@ import PrefixTable "../src/LZSS/Encoder/PrefixTable";
 actor {
 
     public func runTests() : async (Bool, Text) {
-        
+
         let testGroups = [
             LzssTest.Encoder,
             LzssTest.PrefixTable,
@@ -49,12 +47,9 @@ actor {
 
     let {
         assertTrue;
-        assertFalse;
         assertAllTrue;
         describe;
         it;
-        skip;
-        pending;
         run;
     } = ActorSpec;
 
@@ -76,7 +71,7 @@ actor {
                                 gzip_encoder.encode(Blob.toArray(input));
                                 let compressed = gzip_encoder.finish();
 
-                                for (chunk in compressed.chunks.vals()){
+                                for (chunk in compressed.chunks.vals()) {
                                     gzip_decoder.decode(chunk);
                                 };
 
@@ -99,7 +94,7 @@ actor {
                                         fixed_huffman_encoder.encode(Blob.toArray(input));
                                         let compressed = fixed_huffman_encoder.finish();
 
-                                        for (chunk in compressed.chunks.vals()){
+                                        for (chunk in compressed.chunks.vals()) {
                                             gzip_decoder.decode(chunk);
                                         };
                                         let res = gzip_decoder.finish();
@@ -118,7 +113,7 @@ actor {
                                         let compressed = fixed_huffman_encoder.finish();
                                         Debug.print("short text example: " # debug_show (text.size()) # " -> " # debug_show compressed.total_size # " bytes");
 
-                                        for (chunk in compressed.chunks.vals()){
+                                        for (chunk in compressed.chunks.vals()) {
                                             gzip_decoder.decode(chunk);
                                         };
                                         let res = gzip_decoder.finish();
@@ -138,7 +133,7 @@ actor {
 
                                         assert compressed.total_size < input.size() * 7 / 10;
 
-                                        for (chunk in compressed.chunks.vals()){
+                                        for (chunk in compressed.chunks.vals()) {
                                             gzip_decoder.decode(chunk);
                                         };
 
@@ -170,7 +165,7 @@ actor {
 
                                 Debug.print("short text example: " # debug_show (text.size()) # " -> " # debug_show compressed.total_size # " bytes");
 
-                                for (chunk in compressed.chunks.vals()){
+                                for (chunk in compressed.chunks.vals()) {
                                     gzip_decoder.decode(chunk);
                                 };
                                 let res = gzip_decoder.finish();
@@ -193,8 +188,8 @@ actor {
                                 Debug.print("Example: " # debug_show (Example.text.size()) # " -> " # debug_show compressed.total_size # " bytes");
 
                                 assert compressed.total_size < input.size() * 7 / 10;
-                                
-                                for (chunk in compressed.chunks.vals()){
+
+                                for (chunk in compressed.chunks.vals()) {
                                     gzip_decoder.decode(chunk);
                                 };
 
@@ -203,7 +198,7 @@ actor {
 
                                 assertTrue(decoded == input);
                             },
-                        )
+                        ),
                     ],
                 ),
             ]);
@@ -295,7 +290,6 @@ actor {
 
                                             let lzss = Lzss.Encoder(null);
                                             let blob = Text.encodeUtf8(Example.text);
-                                            let bytes = Blob.toArray(blob);
 
                                             let buffer = Buffer.Buffer<Lzss.LzssEntry>(8);
                                             lzss.encodeBlob(blob, buffer);

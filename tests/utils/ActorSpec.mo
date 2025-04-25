@@ -19,10 +19,6 @@ module {
     skipped : Nat;
   };
 
-  func eqStatus(x : Status, y : Status) : Bool {
-    x.failed == y.failed and x.passed == y.passed and x.pending == y.pending and x.skipped == y.skipped;
-  };
-
   let emptyStatus : Status = {
     failed = 0;
     passed = 0;
@@ -42,7 +38,6 @@ module {
   func printStatus(status : Status) : Text {
     "Failed: " # Int.toText(status.failed) # ", Passed: " # Int.toText(status.passed) # ", Pending: " # Int.toText(status.pending) # ", Skipped: " # Int.toText(status.skipped);
   };
-
 
   public func run(groups_ : [Group]) : Bool {
     let (groups, status) = getGroups(groups_);
@@ -83,20 +78,19 @@ module {
         let passed = status.passed;
         let pending = status.pending;
         let skipped = status.skipped;
-        switch(failed, passed, pending, skipped) {
-          case (0, 0, 0, 0) { ""; };
-          case (1, 0, 0, 0) { ": Failed"; };
-          case (0, 1, 0, 0) { ": Passed"; };
-          case (0, 0, 1, 0) { ": Pending"; };
-          case (0, 0, 0, 1) { ": Skipped"; };
-          case (_, _, _, _) { ":" # printStatus(status); };
+        switch (failed, passed, pending, skipped) {
+          case (0, 0, 0, 0) { "" };
+          case (1, 0, 0, 0) { ": Failed" };
+          case (0, 1, 0, 0) { ": Passed" };
+          case (0, 0, 1, 0) { ": Pending" };
+          case (0, 0, 0, 1) { ": Skipped" };
+          case (_, _, _, _) { ":" # printStatus(status) };
         };
       };
       Debug.print(newline # indent # group.name # statusText # "\n");
       printGroups(group.groups, indent # "  ");
     };
   };
-
 
   public func describe(name_ : Text, groups_ : [Group]) : Group {
     {
@@ -121,7 +115,7 @@ module {
 
   public let test = it;
 
-  public func skip(name_ : Text, passed_ : Bool) : Group {
+  public func skip(name_ : Text, _ : Bool) : Group {
     {
       name = name_;
       groups = [];

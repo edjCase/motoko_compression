@@ -1,20 +1,15 @@
 import Array "mo:base/Array";
 import Blob "mo:base/Blob";
 import Buffer "mo:base/Buffer";
-import Option "mo:base/Option";
-import Int "mo:base/Int";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
 import Nat8 "mo:base/Nat8";
-import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 import Text "mo:base/Text";
-import Debug "mo:base/Debug";
 import Time "mo:base/Time";
 
 import BitBuffer "mo:bitbuffer/BitBuffer";
 import CRC32 "../libs/CRC32";
-import Itertools "mo:itertools/Iter";
 
 import Deflate "../Deflate";
 import Lzss "../LZSS";
@@ -117,15 +112,17 @@ module {
 
         // Compression
         let deflate = Deflate.Encoder(bitbuffer, deflate_options);
-        deflate.set_new_block_event_handler(func (start : Nat, end : Nat) {
-            block_location_in_bits.add((start, end));
-        });
+        deflate.set_new_block_event_handler(
+            func(start : Nat, end : Nat) {
+                block_location_in_bits.add((start, end));
+            }
+        );
 
         /// Returns the block size for the encoder
         public func block_size() : Nat {
             deflate_options.block_size;
         };
-        
+
         /// Compresses a byte array and adds it to the internal buffer
         public func encode(bytes : [Nat8]) {
             input_size += bytes.size();
@@ -178,9 +175,6 @@ module {
             // - input size
             BitBuffer.addBytes(bitbuffer, nat_to_le_bytes(input_size, 4));
 
-            let TRANSFER_LIMIT = 1024 * 1024 * 2; // 2MB
-
-            let chunks_limit = Nat.min(TRANSFER_LIMIT, block_size());
             let total_byte_size = bitbuffer.byteSize();
 
             var prev_end = 0;
@@ -188,17 +182,17 @@ module {
 
             let chunks : [[Nat8]] = Array.tabulate(
                 block_location_in_bits.size(),
-                func (i : Nat): [Nat8] {
-                    let (_start, _end) = switch(block_location_in_bits.getOpt(i)){
+                func(i : Nat) : [Nat8] {
+                    let (_start, _end) = switch (block_location_in_bits.getOpt(i)) {
                         case (?range) range;
                         case (_) (prev_end, bitbuffer.bitSize());
                     };
-                    
+
                     let start = Nat.min(_start, prev_end);
-                    let end = if (64 + 8 >= (bitbuffer.bitSize() - _end : Nat) ){
-                        bitbuffer.bitSize()
-                    }else {
-                        _end
+                    let end = if (64 + 8 >= (bitbuffer.bitSize() - _end : Nat)) {
+                        bitbuffer.bitSize();
+                    } else {
+                        _end;
                     };
 
                     prev_end := end;
@@ -209,8 +203,8 @@ module {
                     let bytes = BitBuffer.getBytes(bitbuffer, start_bit_index, nbytes);
                     prev_end_bit_index := start_bit_index + (nbytes * 8);
 
-                    bytes
-                }
+                    bytes;
+                },
             );
 
             clear();

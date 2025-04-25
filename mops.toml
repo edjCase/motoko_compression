@@ -1,15 +1,20 @@
 [package]
-name = "deflate"
+name = "compression"
 version = "0.1.0"
-description = "Deflate compression and decompression algorithm with support for the GZIP file format."
-repository = "https://github.com/NatLabs/deflate.mo"
+description = "Compression and decompression algorithms with support for DEFLATE, GZIP, Brotli."
+repository = "https://github.com/edjcase/motoko_compression"
+license = "MIT"
 keywords = [ "compression", "decompression", "deflate", "gzip" ]
 
 [dependencies]
-base = "0.8.1"
-itertools = "0.1.1"
+base = "0.14.9"
+itertools = "0.2.2"
 circular-buffer = "0.0.1"
 bitbuffer = "1.2.0"
-hash = "https://github.com/tomijaga/hash.mo#master"
-buffer-deque = "0.0.1"
-array = "https://github.com/aviate-labs/array.mo#v0.2.1"
+hash = "https://github.com/tomijaga/hash.mo#master@7fd84e2718c68a83765b71ddb9bba8f3a680f564"
+buffer-deque = "0.1.0"
+array = "https://github.com/aviate-labs/array.mo#v0.2.1@89bb25b7f24ab31082ee3d843d720404eb1d0304"
+test = "2.1.1"
+
+[dev-dependencies]
+test = "2.1.1"
