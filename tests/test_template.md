@@ -1,12 +1,12 @@
 ```motoko
-import Debug "mo:base/Debug";
-import Iter "mo:base/Iter";
+import Debug "mo:base@0/Debug";
+import Iter "mo:base@0/Iter";
 
 import ActorSpec "./utils/ActorSpec";
 import Lib "../src";
 
 let {
-    assertTrue; assertFalse; assertAllTrue; 
+    assertTrue; assertFalse; assertAllTrue;
     describe; it; skip; pending; run
 } = ActorSpec;
 

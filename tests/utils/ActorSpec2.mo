@@ -1,8 +1,8 @@
-import Array "mo:base/Array";
-import Iter "mo:base/Iter";
-import Int "mo:base/Int";
-import Nat "mo:base/Nat";
-import Text "mo:base/Text";
+import Array "mo:base@0/Array";
+import Iter "mo:base@0/Iter";
+import Int "mo:base@0/Int";
+import Nat "mo:base@0/Nat";
+import Text "mo:base@0/Text";
 
 module {
   public type Group = {
